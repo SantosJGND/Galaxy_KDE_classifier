@@ -71,6 +71,9 @@ parser.add_argument("--ncomp",type = int,default = 4,help = "Number of component
 ### 
 parser.add_argument("--outmethod",default = "None",help = "Outlier filter method. options: DBSCAN, NMF, Perc, Z, Isolation_forest.")
 ###
+parser.add_argument("--overlap",type= int,default = 100,help = "Overlap between windows, in snps")
+###
+
 args = parser.parse_args()
 
 
@@ -451,8 +454,8 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
                 s2 = time.time()
                 elapsed = s2 - s1
                 Intervals.append(elapsed)
-                SequenceStore = {fy:SequenceStore[fy][:int(Window/2)] for fy in Whose}
-                Win = int(Window/2)
+                SequenceStore = {fy:SequenceStore[fy][args.overlap:] for fy in Whose}
+                Win = Window - args.overlap
         
         Progress(Index,Intervals,end,50,Window)
         Index += 1
