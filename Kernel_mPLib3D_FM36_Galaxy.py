@@ -47,8 +47,6 @@ parser.add_argument("--admx",help = "admixed accession indexes in geno file")
 
 parser.add_argument("--proc",help = "number of processors requested")
 
-
-### optional arguments
 parser.add_argument("--bin",default = 5,type= int,help = "smoothing parameter [savgol filter]")
 ###
 parser.add_argument("--MSprint",action= "store_false",help = "if given prints cluster stats.")
