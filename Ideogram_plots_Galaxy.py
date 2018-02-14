@@ -30,13 +30,13 @@ parser = argparse.ArgumentParser()
 parser.add_argument("books",type=str,metavar= 'N',nargs= '+',
                     help = "Reference files to read. Any number can be given.")
 
-parser.add_argument("--focus",help = "reference accessions indexes in genofile.")
+parser.add_argument("--focus",type= str,help = "reference accessions indexes in genofile.")
 
-parser.add_argument("--CHR",help = "chromosome to draw ideogram of.")
+parser.add_argument("--CHR",type= int,help = "chromosome to draw ideogram of.")
 
-parser.add_argument("--start",help = "where to begin, in markers. Only makes sense if --CHR is also used.")
+parser.add_argument("--start",type= int,help = "where to begin, in markers. Only makes sense if --CHR is also used.")
 
-parser.add_argument("--end",help = "where to end, in markers. Only makes sense if --CHR is also used.")
+parser.add_argument("--end",type= int,help = "where to end, in markers. Only makes sense if --CHR is also used.")
 
 parser.add_argument("--bin",default = 5,type= int,help = "smoothing parameter [savgol filter]")
 
@@ -59,18 +59,16 @@ args = parser.parse_args()
 ########## Complementary files.
 
 def read_refs(index_file):
-    indxs = recursively_default_dict()
+    indxs = []
     
     Input = open(index_file,'r')
     for line in Input:
         line = line.split()
-        indxs[int(line[0])][int(line[1])] = []
+        indxs.append(line[0])
     
     Input.close()
     
-    indxs = {gop:[x for x in indxs[gop].keys()] for gop in indxs.keys()}
-    
-    return indxs, [x for x in indxs.keys()]
+    return indxs
 
 
 
@@ -196,11 +194,9 @@ def read_3D_profiles(File_list):
     Blocks= recursively_default_dict()
 #    Profiles= recursively_default_dict()
     Out = recursively_default_dict()
-    Names= []
-            
+    Names= []        
     
     for File in File_list:
-        Blocks[Chr]= recursively_default_dict()
         
         ##### read blocks file
         Input= open(File,'r')
@@ -232,6 +228,8 @@ def read_3D_profiles(File_list):
 #### read block and profile files
 ####
 
+print('To begin reading from: ')
+print(args.books)
 
 Ref_profiles, Names, Out = read_3D_profiles(args.books)
 
@@ -248,7 +246,7 @@ else:
 focus_indexes= [x for x in range(len(Names)) if Names[x] in Focus]
 
 
-Blocks = Merge_class(Ref_profiles,focus_indexes,Out,args.threshold,args.BIN,args.outlier)
+Blocks = Merge_class(Ref_profiles,focus_indexes,Out,args.threshold,args.bin,args.outlier)
 
 
 ####
@@ -258,6 +256,7 @@ if args.CHR:
     chromosomes= [args.CHR]
 else:
     chromosomes= Blocks.keys()
+
 
 if args.start:
     Blocks= {Chr:{x:Blocks[Chr][x] for x in Blocks[Chr].keys() if x >= args.start} for Chr in Blocks.keys()}
@@ -336,8 +335,8 @@ def compress_ideo(df,chromosome_list):
     for CHR in range(len(chromosome_list)):
         
         Chr = int(re.search('chr(.+?)_',chromosome_list[CHR]).group(1))
-        Coordinates = sorted(df.start)
         sub = df[df.chrom == chromosome_list[CHR]]
+        Coordinates = sorted(sub.start)
         Size = sub.shape[0]
         start = min(df.start)
         First = sub.gieStain.iloc[0]
@@ -446,6 +445,6 @@ ax.set_yticks([chrom_centers[i] for i in chromosome_list])
 ax.set_yticklabels(chromosome_list, fontsize = 5)
 ax.axis('tight')
 
-plt.savefig('Ideo_' + Subject + '.png',bbox_inches = 'tight')
+plt.savefig('Ideo_' + Subject +'_CHR' + str(chromosomes[-1]).zfill(2)+'.png',bbox_inches = 'tight')
 
-
+print('Done.')
