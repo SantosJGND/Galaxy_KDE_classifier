@@ -27,8 +27,8 @@ import argparse
 parser = argparse.ArgumentParser()
 
 ### optional arguments
-
-parser.add_argument("books",type=str,help = "Reference files to read. Any number can be given.")
+parser.add_argument("books",type=str,metavar= 'N',nargs= '+',
+                    help = "Reference files to read. Any number can be given.")
 
 parser.add_argument("--focus",help = "reference accessions indexes in genofile.")
 
