@@ -1,3 +1,5 @@
+### test run Kernel classification
+
 qsub -N FM36 -V -q bigmem.q -pe parallel_smp 10 -l mem_free=20G -b y python -u Kernel_mPLib3D_FM36_Galaxy.py \
 --CHR 2 \
 --geno /gs7k1/home/jgarcia/olde_home/FILTER_GENO/SplitGENO/GENO_chr02.geno \
@@ -6,3 +8,25 @@ qsub -N FM36 -V -q bigmem.q -pe parallel_smp 10 -l mem_free=20G -b y python -u K
 --ref /gs7k1/home/jgarcia/PO_Core/refs_CORE.txt \
 --admx /gs7k1/home/jgarcia/PO_Core/admx_CORE.txt \
 --proc 10
+
+
+#### test run Ideogram plot
+
+qsub -N ideo_7 -q normal.q -V -b yes python -u Ideogram_plots_Galaxy.py \
+/work/jgarcia/PO_lunch/COMP/Blocks_Request_st1_CHR07.txt \
+--focus /work/jgarcia/PO_lunch/cBasmati_names.txt \
+--CHR 7 \
+--height 9 \
+--width 18 \
+--bin 5 \
+--threshold 2
+
+qsub -N ideo_1 -q normal.q -V -b yes python -u Ideogram_plots_Galaxy.py \
+/work/jgarcia/PO_lunch/COMP/Blocks_Request_st1_CHR01.txt \
+--CHR 1 \
+--height 100 \
+--width 18 \
+--bin 15 \
+--threshold 2
+
+#### test local analysis, ideogram and plotly output.

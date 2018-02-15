@@ -38,7 +38,7 @@ parser.add_argument("--start",type= int,help = "where to begin, in markers. Only
 
 parser.add_argument("--end",type= int,help = "where to end, in markers. Only makes sense if --CHR is also used.")
 
-parser.add_argument("--bin",default = 5,type= int,help = "smoothing parameter [savgol filter]")
+parser.add_argument("--bin",default = 5,type= int,help = "smoothing parameter, must be uneven [savgol filter]")
 
 parser.add_argument("--outlier",type=float,default = 1e-3,help = "Outlier threshold")
 
@@ -46,7 +46,7 @@ parser.add_argument("--threshold",type = float,default = 1.6,help = "Intermediat
 
 parser.add_argument("--chrom_height",type= float, default= 1, help= "height of ideograms")
 
-parser.add_argument("--chrom_gap",type= float,default= .05,help= "gap between ideograms.")
+parser.add_argument("--chrom_gap",type= float,default= 0,help= "gap between ideograms.")
 
 parser.add_argument("--height",type= float, default= 10,help= "figure height, in inches.")
 
@@ -247,8 +247,9 @@ focus_indexes= [x for x in range(len(Names)) if Names[x] in Focus]
 
 
 Blocks = Merge_class(Ref_profiles,focus_indexes,Out,args.threshold,args.bin,args.outlier)
+print(args.CHR *2)
 
-
+print(len(Blocks[args.CHR]))
 ####
 ####
 
@@ -437,7 +438,7 @@ for collection in chromosome_collections(ideo, chrom_ybase, chrom_height, edgeco
 
 # Axes tweaking
 ax.set_xticks([x for x in range(0,max(ideo.end),int(1e5))])
-plt.xticks(fontsize = 10,rotation = 90)
+plt.xticks(fontsize = 5,rotation = 90)
 ax.tick_params(axis = 'x',pad = 10)
 
 ax.tick_params(axis='y', which='major', pad=30)
@@ -445,6 +446,6 @@ ax.set_yticks([chrom_centers[i] for i in chromosome_list])
 ax.set_yticklabels(chromosome_list, fontsize = 5)
 ax.axis('tight')
 
-plt.savefig('Ideo_' + Subject +'_CHR' + str(chromosomes[-1]).zfill(2)+'.png',bbox_inches = 'tight')
+plt.savefig('Ideo_' + Subject +'_CHR' + str(chromosomes[-1]).zfill(2)+'_Z' +str(args.threshold)+ '_bin'+ str(args.bin)+'.png',bbox_inches = 'tight')
 
 print('Done.')
