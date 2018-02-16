@@ -10,17 +10,19 @@ qsub -N FM36 -V -q bigmem.q -pe parallel_smp 10 -l mem_free=20G -b y python -u K
 --proc 10
 
 
-#### test run Ideogram plot
+#### test run Ideogram plot:
+### focusing on the circumBasmati (focus file)
 
-qsub -N ideo_7 -q normal.q -V -b yes python -u Ideogram_plots_Galaxy.py \
-/work/jgarcia/PO_lunch/COMP/Blocks_Request_st1_CHR07.txt \
+qsub -N ideo_9 -q normal.q -V -b yes python -u Ideogram_plots_Galaxy.py \
+/work/jgarcia/PO_lunch/COMP/Blocks_Request_st1_CHR09.txt \
 --focus /work/jgarcia/PO_lunch/cBasmati_names.txt \
---CHR 7 \
+--CHR 9 \
 --height 9 \
 --width 18 \
---bin 5 \
+--bin 15 \
 --threshold 2
 
+### not focusing (plots all inds if --focus not given)
 qsub -N ideo_1 -q normal.q -V -b yes python -u Ideogram_plots_Galaxy.py \
 /work/jgarcia/PO_lunch/COMP/Blocks_Request_st1_CHR01.txt \
 --CHR 1 \
