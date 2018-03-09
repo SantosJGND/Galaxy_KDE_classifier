@@ -47,6 +47,8 @@ parser.add_argument("--admx",help = "admixed accession indexes in geno file")
 
 parser.add_argument("--proc",help = "number of processors requested")
 
+parser.add_argument("--out",type= str,default= '',help = "output directory")
+
 parser.add_argument("--bin",default = 5,type= int,help = "smoothing parameter [savgol filter]")
 ###
 parser.add_argument("--MSprint",action= "store_false",help = "if given prints cluster stats.")
@@ -114,7 +116,7 @@ print([len(x) for x in Geneo.values()])
 CHR = args.CHR
 BIN = args.bin
 
-Home = ''
+Home = args.out
 
 ####
 ####
@@ -124,7 +126,7 @@ def Set_up(Chr0,Chr1,Sub,MissG):
     Settings= []
     for Chr in range(Chr0,Chr1):
         Size= len(MissG[Chr])
-        Steps = range(0,Size+1,int(Size/float(Sub)))
+        Steps = [x for x in range(0,Size+1,int(Size/float(Sub)))]
         Steps[-1] = Size
         for i in range(len(Steps)-1):
             Settings.append([Chr,Steps[i],Steps[i+1]-1])
@@ -201,7 +203,7 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
     
     Crossed = [x for x in Geneo.keys() if x not in Parents]
     
-    t = [x for x in Miss.keys() if Miss[x][0] >= start and Miss[x][0] <= end]
+    #t = [x for x in Miss.keys() if Miss[x][0] >= start and Miss[x][0] <= end]
     
     Whose = list(it.chain(*Geneo.values()))
     SequenceStore = {fy:[] for fy in Whose}
@@ -232,7 +234,7 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
             for judas in SequenceStore.keys():
                 SequenceStore[judas].append(Codes[int(line[judas])])
             Win += 1
-            if Win == Window and (end - Index - Window) > (Window/4):
+            if Win == Window:
                 s1 = time.time()
                 window_start = Index - Window + 1
                 Seq = SequenceStore
@@ -249,7 +251,6 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
                     pca = PCA(n_components=n_comp, whiten=False,svd_solver='randomized')
                     data = pca.fit_transform(data)
                     data = data[:,[x for x in range(data.shape[1]) if pca.explained_variance_ratio_[x] >= PC_var_lim]]
-                
                 if DIMr == 'NMF':
                     from sklearn.decomposition import NMF
                     data = NMF(n_components=n_comp, init='random', random_state=0).fit_transform(data)
@@ -297,7 +298,7 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
                     P_dist= np.nan_to_num(P_dist)
                     Dist= np.nan_to_num(Dist)
                     if np.std(P_dist) == 0:
-                        Dist= [int(Dist[x] in P_dist) for x in range(len(Dist))]
+                        Dist= np.array([int(Dist[x] in P_dist) for x in range(len(Dist))])
                     else:
                         Dist = scipy.stats.norm(mean(P_dist),np.std(P_dist)).cdf(Dist)
                     Dist= np.nan_to_num(Dist)
@@ -312,7 +313,6 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
                 for D in range(len(Parents)):
                     Where = [sum([len(Geneo[x]) for x in Parents[0:D]])+Aro.shape[0],sum([len(Geneo[x]) for x in Parents[0:(D+1)]])+Aro.shape[0]]
                     Where = [int(x) for x in Where]
-                    
                     ### FILTER OUT OUTLIERS
                     ### Conservative methods are preferred since only extreme values 
                     ### can reasonably be removed given an unreliable sampling method.
@@ -421,7 +421,7 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
                     #Fist = (Fist - np.mean(P_dist)) / np.std(P_dist)
                     if normalize == 'CDF':
                         if np.std(P_dist)== 0:
-                            Fist= np.zeros(len(Fist))
+                            Fist= np.array([int(Fist[x] in P_dist) for x in range(len(Fist))])
                         else:
                             Fist = scipy.stats.norm(np.mean(P_dist),np.std(P_dist)).cdf(Fist)
                     else:
@@ -433,19 +433,7 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
                 
                     Accurate.append(Fist)
                     Likes[D].append(Fist)
-                   
-                ### Not under use, but 'Accurate' is useful for local analysis/testing.
-#                Accurate = np.vstack(Accurate).T
-#                Accuracy = np.argmax(Accurate,axis = 1) 
-#                Similar = [sum(Accurate[g,:] == Accurate[g,Accuracy[g]]) for g in range(Accurate.shape[0])]
-#                Washed = {d:[c + Aro.shape[0] + sum([len(Geneo[x]) for x in Parents[0:d]]) for c in range(len(Geneo[Parents[d]])) \
-#                #if Similar[c + sum([len(Geneo[x]) for x in Parents[0:d]]) + Aro.shape[0]] < 3 and Accuracy[c + sum([len(Geneo[x]) for x in Parents[0:d]]) + Aro.shape[0]] == d] for d in range(3)}
-#                #if Accuracy[c + sum([len(Geneo[x]) for x in Parents[0:d]]) + Aro.shape[0]] == d \
-#                if Accurate[c + sum([len(Geneo[x]) for x in Parents[0:d]]) + Aro.shape[0],d] >= 0.1] for d in range(len(Parents))}
-                #Accurate[[x for x in range(Where[0],Where[1]) if x not in Washed[2]]]
-                ######
-                
-                #JC_visual.append(np.hstack((Likings,pca.explained_variance_ratio_[:5])))
+                  
                 
                 Points.append(Miss[window_start][0])
                 Points_out.append(Miss[Index][0])
@@ -454,12 +442,13 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
                 Intervals.append(elapsed)
                 SequenceStore = {fy:SequenceStore[fy][args.overlap:] for fy in Whose}
                 Win = Window - args.overlap
+                if end - Index < Window:
+                    Window += end - Index
         
         Progress(Index,Intervals,end,50,Window)
         Index += 1
     
     Geno.close()
-    
     
     #rm /gs7k1/home/jgarcia/Likes/COMP/*
     #qsub -N Bubba -V -q normal.q -b y python -u Launch.py Launch_PO.py 5
@@ -480,13 +469,13 @@ parameters = Set_up(CHR,CHR + 1,nbProcs,MissG)
 
 
 def what(job):
-	try:
-		rslt = Main_engine(*job)
-	except Exception as e:
-		print e
-		rslt = 1
-	finally:
-		return rslt
+    try:
+        rslt = Main_engine(*job)
+    except Exception as e:
+        print(e)
+        rslt = 1
+    finally:
+        return rslt
 
 
 #parameters= [[1,2000,4000],[2,200,2000],[2,2200,3000],[6,23000,26000]]
@@ -610,8 +599,6 @@ for element in results:
         Construct[k].update(element[1][k])
 
 
-
-
 Topo= {CHR:recursively_default_dict()}
 
 for repas in Clover.keys():
@@ -632,7 +619,7 @@ Points = sorted(Out[CHR].keys())
  ############## ######################################################
 
 start= 1
-print 'writting to directory ' + Home
+print('writting to directory ' + Home)
 
 if args.MSprint == True:
     Output = open(Home + "Blocks_Request_st"+str(start)+"_CHR" + str(CHR).zfill(2) + ".txt","w")
@@ -649,8 +636,8 @@ if args.MSprint == True:
     for block in range(len(Topo[CHR][0])):
         for ref in Topo[CHR].keys():
             Output.write(str(CHR) + "\t")
-            Output.write(str(Points[block]) + "\t")
-            Output.write(str(Out[CHR][Points[block]]) + "\t")
+            Output.write(str(int(Points[block])) + "\t")
+            Output.write(str(int(Out[CHR][Points[block]])) + "\t")
             Output.write(str(ref) + '\t')
             for ass in range(len(Topo[CHR][ref][block])):
                 Output.write(str(Topo[CHR][ref][block][ass]) + "\t")
@@ -674,7 +661,7 @@ Output.write("\n")
 for prf in Construct[CHR].keys():
     for cl in Construct[CHR][prf].keys():
         Output.write(str(CHR) + "\t")
-        Output.write(str(prf) + '\t')
+        Output.write(str(int(prf)) + '\t')
         Output.write(str(cl) + '\t')
         Output.write('\t'.join([str(round(x,5)) for x in Construct[CHR][prf][cl]]))
         Output.write('\n')

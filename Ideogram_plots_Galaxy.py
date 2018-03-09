@@ -38,7 +38,11 @@ parser.add_argument("--start",type= int,help = "where to begin, in markers. Only
 
 parser.add_argument("--end",type= int,help = "where to end, in markers. Only makes sense if --CHR is also used.")
 
+parser.add_argument("--out",type= str,default= '',help = "output directory")
+
 parser.add_argument("--bin",default = 5,type= int,help = "smoothing parameter, must be uneven [savgol filter]")
+
+parser.add_argument("--sg_order",default = 3,type= int,help = "staviksy golay filter order")
 
 parser.add_argument("--outlier",type=float,default = 1e-3,help = "Outlier threshold")
 
@@ -52,13 +56,16 @@ parser.add_argument("--height",type= float, default= 10,help= "figure height, in
 
 parser.add_argument("--width",type= float,default= 20,help= "figure width, in inches.")
 
+parser.add_argument('--xticks',type= int,default= 100000,help= 'xticks on final ideogram')
+
 args = parser.parse_args()
 
 
+Home= args.out
 
 ########## Complementary files.
 
-def read_refs(index_file):
+def read_focus(index_file):
     indxs = []
     
     Input = open(index_file,'r')
@@ -82,8 +89,6 @@ def recursively_default_dict():
         return collections.defaultdict(recursively_default_dict)
 
 
-Parents = 3
-
 
 def Merge_class(Ref_profiles,focus_indicies,Out,Diff_threshold,BIN,X_threshold):
     Blocks_genome = recursively_default_dict()
@@ -92,8 +97,12 @@ def Merge_class(Ref_profiles,focus_indicies,Out,Diff_threshold,BIN,X_threshold):
         print(CHR)
         Points = sorted(Ref_profiles[CHR].keys())
         Likes = Ref_profiles[CHR]
-        Likes = {x:[Likes[bl][x] for bl in sorted(Likes.keys())] for x in range(Parents)}
+        N_pops= len(Likes[[x for x in Likes.keys()][0]])
+        
+        print("number of reference populations: {0}".format(N_pops))
+        Likes = {x:[Likes[bl][x] for bl in sorted(Likes.keys())] for x in range(N_pops)}
         Likes = {x:np.array(Likes[x]) for x in Likes.keys()}
+        
         
         Topo = []
         
@@ -101,7 +110,7 @@ def Merge_class(Ref_profiles,focus_indicies,Out,Diff_threshold,BIN,X_threshold):
         #range_Crossed = [x for x in range(Aro.shape[0])]
         
         for acc in focus_indicies:
-            Guys = np.array([Likes[x][:,acc] for x in range(Parents)])
+            Guys = np.array([Likes[x][:,acc] for x in range(N_pops)])
             Guys = np.nan_to_num(Guys)
             
             
@@ -110,14 +119,14 @@ def Merge_class(Ref_profiles,focus_indicies,Out,Diff_threshold,BIN,X_threshold):
             Test = [round(x) for x in Test]
             
             Guys = [[[y,0][int(y<=X_threshold)] for y in x] for x in Guys]
-            Guys = [savgol_filter(x,BIN,3,mode = "nearest") for x in Guys]
-            #    
+            Guys = [savgol_filter(x,BIN,args.sg_order,mode = "nearest") for x in Guys]
+            #
             Guys = np.array(Guys).T
             
             maxim = np.argmax(Guys,axis = 1)
             where_X = [x for x in range(Guys.shape[0]) if Test[x] == 1]
             #where_X = [x for x in range(Guys.shape[0]) if len([c for c in Guys[x,:3] if c <= .0001]) == 3]
-            Consex = [x for x in it.combinations(range(Parents),2)]
+            Consex = [x for x in it.combinations(range(N_pops),2)]
             if Consex:
                 for h in range(len(maxim)):
                     CL = []
@@ -139,8 +148,9 @@ def Merge_class(Ref_profiles,focus_indicies,Out,Diff_threshold,BIN,X_threshold):
                     if len(CL) == 2:
                         maxim[h] = 7
                     if len(CL) == 1:
-                        maxim[h] = sum(CL[0]) + Parents
-                maxim[where_X] = Parents
+                        maxim[h] = sum(CL[0]) + N_pops
+            
+            maxim[where_X] = N_pops
             
             if not Consex:
                 for h in range(len(maxim)):
@@ -209,9 +219,9 @@ def read_3D_profiles(File_list):
                 line=line[4:]
                 Names= line
             else:
-                Blocks[int(line[0])][int(line[1])][int(line[3])]= [float(x) for x in line[4:]]
+                Blocks[int(line[0])][int(float(line[1]))][int(line[3])]= [float(x) for x in line[4:]]
                 if line[3] == '0':
-                    Out[int(line[0])][int(line[1])] = int(line[2])
+                    Out[int(line[0])][int(float(line[1]))] = int(float(line[2]))
             d += 1
         
         Input.close()
@@ -239,7 +249,7 @@ Ref_profiles, Names, Out = read_3D_profiles(args.books)
 ###### in the future, replace with input file only, it should be easier.
 
 if args.focus:
-    Focus = read_refs(args.focus)
+    Focus = read_focus(args.focus)
 else:
     Focus = Names
 
@@ -247,9 +257,8 @@ focus_indexes= [x for x in range(len(Names)) if Names[x] in Focus]
 
 
 Blocks = Merge_class(Ref_profiles,focus_indexes,Out,args.threshold,args.bin,args.outlier)
-print(args.CHR *2)
 
-print(len(Blocks[args.CHR]))
+print("Number chromosomes selected: {0}".format(len(Blocks)))
 ####
 ####
 
@@ -435,9 +444,8 @@ print("adding ideograms...")
 for collection in chromosome_collections(ideo, chrom_ybase, chrom_height, edgecolors=None, linewidths= 0):
     ax.add_collection(collection)
 
-
 # Axes tweaking
-ax.set_xticks([x for x in range(0,max(ideo.end),int(1e5))])
+ax.set_xticks([x for x in range(min(ideo.start),max(ideo.end),int(args.xticks))])
 plt.xticks(fontsize = 5,rotation = 90)
 ax.tick_params(axis = 'x',pad = 10)
 
@@ -446,6 +454,6 @@ ax.set_yticks([chrom_centers[i] for i in chromosome_list])
 ax.set_yticklabels(chromosome_list, fontsize = 5)
 ax.axis('tight')
 
-plt.savefig('Ideo_' + Subject +'_CHR' + str(chromosomes[-1]).zfill(2)+'_Z' +str(args.threshold)+ '_bin'+ str(args.bin)+'.png',bbox_inches = 'tight')
+plt.savefig(Home + 'Ideo_' + Subject +'_CHR' + str(chromosomes[-1]).zfill(2)+'_st' + str(min(ideo.start)) + '_Z' +str(args.threshold)+ '_bin'+ str(args.bin)+'.png',bbox_inches = 'tight')
 
 print('Done.')

@@ -88,8 +88,11 @@ def BIMread(bimFile):
         if d != 0 and int(line[0]) != CHR:
             d = 0
             CHR = int(line[0])
-        Nsnps[CHR][d] = [int(line[3]),line[4],line[5]]
-        Gindex[CHR][int(line[3])] = [d]
+        Nsnps[CHR][d] = [float(line[3]),line[4],line[5]]
+        if float(line[3]) in Gindex[CHR].keys():
+            Gindex[CHR][float(line[3]) + .5] = [d]
+        else:
+            Gindex[CHR][float(line[3])] = [d]
         d += 1
     File.close()
     return Nsnps,Gindex
