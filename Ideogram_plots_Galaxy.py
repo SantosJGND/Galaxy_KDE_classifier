@@ -30,7 +30,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("books",type=str,metavar= 'N',nargs= '+',
                     help = "Reference files to read. Any number can be given.")
 
-parser.add_argument("--focus",type= str,help = "reference accessions indexes in genofile.")
+parser.add_argument("--focus",type= str,help = "IDs of accessions to plot.")
 
 parser.add_argument("--CHR",type= int,help = "chromosome to draw ideogram of.")
 

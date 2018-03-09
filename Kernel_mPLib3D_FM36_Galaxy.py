@@ -51,13 +51,11 @@ parser.add_argument("--out",type= str,default= '',help = "output directory")
 
 parser.add_argument("--bin",default = 5,type= int,help = "smoothing parameter [savgol filter]")
 ###
-parser.add_argument("--MSprint",action= "store_false",help = "if given prints cluster stats.")
+parser.add_argument("--MSprint",action= "store_true",help = "if given prints cluster stats.")
 ###
 parser.add_argument("-c",action = "store_true",help = "specific accession choice file")
 ###
 parser.add_argument("-w",type = int,default = 200, help = "Window size - markers")
-### 
-parser.add_argument("--outlier",type=float,default = 1e-3,help = "Outlier threshold")
 ### 
 parser.add_argument("--threshold",type = float,default = 1.6,help = "Intermediate classification threshold")
 ### 
@@ -69,7 +67,7 @@ parser.add_argument("--dr",default = 'NMF',help = "Dimensionality reduction. opt
 ### 
 parser.add_argument("--ncomp",type = int,default = 4,help = "Number of components kept in case of PCA reduction")
 ### 
-parser.add_argument("--outmethod",default = "None",help = "Outlier filter method. options: DBSCAN, NMF, Perc, Z, Isolation_forest.")
+parser.add_argument("--outmethod",default = "None",help = "Outlier filter of population refs method. options: DBSCAN, NMF, Perc, Z, Isolation_forest.")
 ###
 parser.add_argument("--overlap",type= int,default = 100,help = "Overlap between windows, in snps")
 ###
@@ -149,8 +147,7 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
     
     ### Here define some things
     Window = args.w
-    ## Outlier threshold
-    X_threshold = args.outlier
+    
     #### Intermediate classification threshold
     Diff_threshold = args.threshold
     Filter_Het = args.het
@@ -319,6 +316,7 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
                     ### In other words, no assumptions there.
                     ##### DBSCAN
                     if Outlier_method == 'DBSCAN':
+                        from sklearn.cluster import DBSCAN
                         Quanted_set = data[Where[0]:Where[1],:]
                         db = DBSCAN(eps=0.3, min_samples=5).fit(Quanted_set)
                         core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
@@ -368,6 +366,7 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
                         Below = [x for x in range(len(y_pred)) if y_pred[x] <= 5e-3]
                     #### ISOLATION FOREST ###########################
                     if Outlier_method == 'Isolation_forest':
+                        from sklearn.ensemble import IsolationForest
                         rng = np.random.RandomState(42)
                         Quanted_set = data[Where[0]:Where[1],:]
                         clf = IsolationForest(max_samples=len(Quanted_set), random_state=rng)
@@ -487,103 +486,6 @@ for setting in parameters:
 
 pool = mp.Pool(processes=nbProcs)
 results = pool.map(what, listJobs)
-
-
-
-###### Merge results
-
-def Smooth_class(Likes,Indicies,Diff_threshold,BIN,X_threshold):
-    Points = sorted(Indicies.keys())
-    Likes = {x:np.array(Likes[x]) for x in Likes.keys()}
-    
-    Topo = []
-    
-    #range_Parents = [x + Aro.shape[0] for x in range(Daddy.shape[0])]
-    #range_Crossed = [x for x in range(Aro.shape[0])]
-    
-    for acc in range(Likes[0].shape[1]):
-        Guys = np.array([Likes[x][:,acc] for x in range(len(Parents))])
-        Guys = np.nan_to_num(Guys)
-        
-        
-        Test = [int(x < X_threshold) for x in np.amax(np.array(Guys),axis = 0)]
-        Test = savgol_filter(Test,BIN,3,mode = "nearest")
-        Test = [round(x) for x in Test]
-        
-        Guys = [[[y,0][int(y<=X_threshold)] for y in x] for x in Guys]
-        Guys = [savgol_filter(x,BIN,3,mode = "nearest") for x in Guys]
-        #    
-        Guys = np.array(Guys).T
-        
-        maxim = np.argmax(Guys,axis = 1)
-        where_X = [x for x in range(Guys.shape[0]) if Test[x] == 1]
-        #where_X = [x for x in range(Guys.shape[0]) if len([c for c in Guys[x,:3] if c <= .0001]) == 3]
-        Consex = [x for x in it.combinations(range(len(Parents)),2)]
-        if Consex:
-            for h in range(len(maxim)):
-                CL = []
-                for j in Consex:
-                    Diff = Guys[h,j]
-                    if maxim[h] not in j or len([x for x in Diff if x < X_threshold]) > 0:
-                        continue
-                    if max(Diff) <= X_threshold:
-                        Diff = 0
-                    else:
-                        #Diff = int(len([x for x in Diff if x > 1e-5]) == 1)
-                        Diff = abs(max(Diff)) / abs(min(Diff))
-                        Diff = int(Diff > Diff_threshold)
-                    
-                    #print(Diff)
-                    if Diff == 0:
-                        CL.append(j)
-                
-                if len(CL) == 2:
-                    maxim[h] = 7
-                if len(CL) == 1:
-                    maxim[h] = sum(CL[0]) + len(Parents)
-            maxim[where_X] = len(Parents)
-        
-        if not Consex:
-            for h in range(len(maxim)):
-                maxim[h] = int(10*Guys[h,0])    
-        
-        #Similar = [sum(Guys[g,:] == np.amax(Guys,axis=1)[g]) for g in range(Guys.shape[0])]
-        #Similar = [sum(Guys[g,:] == 0) for g in range(Guys.shape[0])]
-        #Similar = [int(maxim[x] > 3 or sum(Guys[x,:] == 0) > 2 and maxim[x] != 3) + 1 for x in range(len(maxim))]
-        Similar = [int(sum(Guys[x,:] <= 0) == Guys.shape[1] and maxim[x] != 3) + 1 for x in range(len(maxim))]
-        
-        peaks = [Points[x] for x in range(len(Points)) if Similar[x] == 1]
-        where_peaks = [x for x in range(len(Points)) if Similar[x] == 1]
-        
-        d = 'none'
-        if peaks:
-            for l in range(len(Similar)):
-                if Similar[l] == 1:
-                    if d == 'none' and l > 0:
-                        maxim[:l] = [maxim[l] for x in range(l)]
-                    d = l
-                if Similar[l] > 1:
-                    if d != 'none':
-                        #if max(Guys[l,:]) > 0:
-                        #    Close = [x for x in range(Guys.shape[1]) if Guys[l,x] == max(Guys[l,:])]
-                        #    maxim[l] = sum(Close) + 3
-                        #else:
-                        Distances = [abs(peaks[x] - Points[l]) for x in range(len(peaks))]
-                        #print(maxim[l],maxim[where_peaks[Distances.index(min(Distances))]],Similar[l])
-                        maxim[l] = maxim[where_peaks[Distances.index(min(Distances))]]                 
-        
-        ###
-        ### PARK nber: 1
-        ###    
-        
-        Topo.append(maxim + 1)
-    
-    
-    Topo = np.array(Topo).T
-    
-    Clove = {Points[x]:Topo[x,] for x in range(len(Points))}
-    
-    return Clove
 
 
 
