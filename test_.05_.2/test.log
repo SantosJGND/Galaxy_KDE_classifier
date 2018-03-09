@@ -1,0 +1,16 @@
+PLINK v1.90b3v 64-bit (15 Jul 2015)
+Options in effect:
+  --out test_.05_.2/test
+  --vcf test_.05_.2/test.vcf
+
+Hostname: cc2-n8
+Working directory: /work/jgarcia/Simu
+Start time: Thu Mar  1 13:13:51 2018
+
+Random number seed: 1519906431
+193459 MB RAM detected; reserving 96729 MB for main workspace.
+Allocated 3062 MB successfully, after larger attempt(s) failed.
+--vcf: test_.05_.2/test.bed + test_.05_.2/test.bim + test_.05_.2/test.fam
+written.
+
+End time: Thu Mar  1 13:13:51 2018

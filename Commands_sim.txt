@@ -1,0 +1,43 @@
+## modules required
+
+#module load bioinfo/R/3.4.3
+#module load system/python/3.4.3
+#module load bioinfo/plink/1.90b3v
+#module load bioinfo/sNMF_CL/1.2
+
+#### Run Kernel analysis
+## convert vcf file, obtain .bim and .fam files.
+vcf2geno test_.05_.2/test.vcf test_.05_.2/test.geno   
+
+plink --vcf test_.05_.2/test.vcf --out test_.05_.2/test
+
+
+
+## launch FutureMachine36
+qsub -N FM36 -V -q normal.q -pe parallel_smp 2 -l mem_free=20G \
+-b y python -u Kernel_mPLib3D_FM36_Galaxy.py \
+--CHR 1 \
+--geno /work/jgarcia/Simu/test_.05_.2/test.geno \
+--fam /work/jgarcia/Simu/test_.05_.2/test.fam \
+--bim /work/jgarcia/Simu/test_.05_.2/test.bim \
+--ref /work/jgarcia/Simu/refs_sim.txt \
+--admx /work/jgarcia/Simu/admx_sim.txt \
+--out /work/jgarcia/Simu/test_.05_.2/ \
+-w 5 \
+--overlap 3 \
+--proc 2 \
+--dr PCA
+
+
+
+
+### Plot Ideogram
+### not focusing (plots all inds if --focus not given)
+qsub -N ideo_12 -q normal.q -V -b yes python -u Ideogram_plots_Galaxy.py \
+/work/jgarcia/Simu/test_.05_.2/Blocks_Request_st1_CHR01.txt \
+--CHR 1 \
+--height 30 \
+--width 12 \
+--bin 9 \
+--threshold 1.6 \
+--out /work/jgarcia/Simu/test_.05_.2/
