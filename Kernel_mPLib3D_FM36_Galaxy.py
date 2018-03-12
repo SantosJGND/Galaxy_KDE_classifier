@@ -99,6 +99,7 @@ Fam = FAMread(args.fam)
 
 MissG, Gindex = BIMread(args.bim)
 
+
 GenoSUF = args.geno
 
 admx_lib, Crossed = read_refs(args.admx)
@@ -108,14 +109,16 @@ admx_lib.update(refs_lib)
 
 Geneo = admx_lib
 
-print(Geneo.keys())
-print([len(x) for x in Geneo.values()])
-
 CHR = args.CHR
 BIN = args.bin
 
 Home = args.out
 
+print('Number of markers: {}'.format(len(MissG[CHR])))
+
+print('Population labels: {}'.format(Geneo.keys()))
+
+print('Population Sizes: {}'.format([len(x) for x in Geneo.values()]))
 ####
 ####
 
@@ -247,7 +250,7 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
                 if DIMr == 'PCA':
                     pca = PCA(n_components=n_comp, whiten=False,svd_solver='randomized')
                     data = pca.fit_transform(data)
-                    data = data[:,[x for x in range(data.shape[1]) if pca.explained_variance_ratio_[x] >= PC_var_lim]]
+                    
                 if DIMr == 'NMF':
                     from sklearn.decomposition import NMF
                     data = NMF(n_components=n_comp, init='random', random_state=0).fit_transform(data)
@@ -454,7 +457,7 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
     
     Out= {CHR:{Points[star]:Points_out[star] for star in range(len(Points))}}
     
-    return {CHR:{start:Likes}},{CHR:Construct},Out
+    return {CHR:{start:Likes}},{CHR:Construct}, Out
 
 
 ################  ###################  ###############################  ###################
@@ -479,6 +482,7 @@ def what(job):
 
 #parameters= [[1,2000,4000],[2,200,2000],[2,2200,3000],[6,23000,26000]]
 
+print(parameters)
 
 listJobs = []
 for setting in parameters:
@@ -486,8 +490,6 @@ for setting in parameters:
 
 pool = mp.Pool(processes=nbProcs)
 results = pool.map(what, listJobs)
-
-
 
 Clover= {CHR: recursively_default_dict() for CHR in range(1,13)}
 Construct= {CHR: recursively_default_dict() for CHR in range(1,13)}
@@ -523,52 +525,53 @@ Points = sorted(Out[CHR].keys())
 start= 1
 print('writting to directory ' + Home)
 
-if args.MSprint == True:
-    Output = open(Home + "Blocks_Request_st"+str(start)+"_CHR" + str(CHR).zfill(2) + ".txt","w")
-    
-    Output.write("CHR\tIn\tOut\tRef\t")
-    
-    Crossed.extend(Parents)
-    
-    for var in it.chain(*[Geneo[x] for x in Crossed]):
-        Output.write(Fam[var] + "\t")
-    
-    Output.write("\n")
-    
-    for block in range(len(Topo[CHR][0])):
-        for ref in Topo[CHR].keys():
-            Output.write(str(CHR) + "\t")
-            Output.write(str(int(Points[block])) + "\t")
-            Output.write(str(int(Out[CHR][Points[block]])) + "\t")
-            Output.write(str(ref) + '\t')
-            for ass in range(len(Topo[CHR][ref][block])):
-                Output.write(str(Topo[CHR][ref][block][ass]) + "\t")
-            Output.write("\n")
-    
-    Output.close()
+Output = open(Home + "Blocks_Request_st"+str(start)+"_CHR" + str(CHR).zfill(2) + ".txt","w")
 
-#
-#
-#
+Output.write("CHR\tIn\tOut\tRef\t")
 
-Output= open(Home + 'Blocks_profiles_st'+str(start)+'_CHR'+ str(CHR).zfill(2)+ '.txt','w')
-
-Output.write('CHR\tIN\tcluster\t')
+Crossed.extend(Parents)
 
 for var in it.chain(*[Geneo[x] for x in Crossed]):
     Output.write(Fam[var] + "\t")
 
 Output.write("\n")
 
-for prf in Construct[CHR].keys():
-    for cl in Construct[CHR][prf].keys():
+for block in range(len(Topo[CHR][0])):
+    for ref in Topo[CHR].keys():
         Output.write(str(CHR) + "\t")
-        Output.write(str(int(prf)) + '\t')
-        Output.write(str(cl) + '\t')
-        Output.write('\t'.join([str(round(x,5)) for x in Construct[CHR][prf][cl]]))
-        Output.write('\n')
+        Output.write(str(int(Points[block])) + "\t")
+        Output.write(str(int(Out[CHR][Points[block]])) + "\t")
+        Output.write(str(ref) + '\t')
+        for ass in range(len(Topo[CHR][ref][block])):
+            Output.write(str(Topo[CHR][ref][block][ass]) + "\t")
+        Output.write("\n")
 
 Output.close()
 
+#
+#
+#
 
 
+if args.MSprint == True:
+    Output= open(Home + 'Blocks_profiles_st'+str(start)+'_CHR'+ str(CHR).zfill(2)+ '.txt','w')
+    
+    Output.write('CHR\tIN\tcluster\t')
+    
+    for var in it.chain(*[Geneo[x] for x in Crossed]):
+        Output.write(Fam[var] + "\t")
+    
+    Output.write("\n")
+    
+    for prf in Construct[CHR].keys():
+        for cl in Construct[CHR][prf].keys():
+            Output.write(str(CHR) + "\t")
+            Output.write(str(int(prf)) + '\t')
+            Output.write(str(cl) + '\t')
+            Output.write('\t'.join([str(round(x,5)) for x in Construct[CHR][prf][cl]]))
+            Output.write('\n')
+    
+    Output.close()
+
+
+print('Done.')
