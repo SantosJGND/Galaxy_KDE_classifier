@@ -32,6 +32,8 @@ parser.add_argument("books",type=str,metavar= 'N',nargs= '+',
 
 parser.add_argument("--focus",type= str,help = "IDs of accessions to plot.")
 
+parser.add_argument("--id",type= str,help = "ID for this particular plot. if not given, name of last accession in focus.")
+
 parser.add_argument("--CHR",type= int,help = "chromosome to draw ideogram of.")
 
 parser.add_argument("--start",type= int,help = "where to begin, in markers. Only makes sense if --CHR is also used.")
@@ -39,6 +41,8 @@ parser.add_argument("--start",type= int,help = "where to begin, in markers. Only
 parser.add_argument("--end",type= int,help = "where to end, in markers. Only makes sense if --CHR is also used.")
 
 parser.add_argument("--out",type= str,default= '',help = "output directory")
+
+parser.add_argument("--coarse",action='store_false',help= 'to smooth or not to smooth.')
 
 parser.add_argument("--bin",default = 5,type= int,help = "smoothing parameter, must be uneven [savgol filter]")
 
@@ -112,14 +116,16 @@ def Merge_class(Ref_profiles,focus_indicies,Out,Diff_threshold,BIN,X_threshold):
         for acc in focus_indicies:
             Guys = np.array([Likes[x][:,acc] for x in range(N_pops)])
             Guys = np.nan_to_num(Guys)
-            
+            Guys = [[[y,0][int(y<=X_threshold)] for y in x] for x in Guys]
             
             Test = [int(x < X_threshold) for x in np.amax(np.array(Guys),axis = 0)]
-            Test = savgol_filter(Test,BIN,3,mode = "nearest")
-            Test = [round(x) for x in Test]
             
-            Guys = [[[y,0][int(y<=X_threshold)] for y in x] for x in Guys]
-            Guys = [savgol_filter(x,BIN,args.sg_order,mode = "nearest") for x in Guys]
+            if args.coarse:
+                
+                Guys = [savgol_filter(x,BIN,args.sg_order,mode = "nearest") for x in Guys]
+                Test = savgol_filter(Test,BIN,args.sg_order,mode = "nearest")
+                Test = [round(x) for x in Test]
+            
             #
             Guys = np.array(Guys).T
             
@@ -137,9 +143,9 @@ def Merge_class(Ref_profiles,focus_indicies,Out,Diff_threshold,BIN,X_threshold):
                         if max(Diff) <= X_threshold:
                             Diff = 0
                         else:
-                            #Diff = int(len([x for x in Diff if x > 1e-5]) == 1)
-                            Diff = abs(max(Diff)) / abs(min(Diff))
-                            Diff = int(Diff > Diff_threshold)
+                            Diff = int(len([x for x in Diff if x <= .1]) == 1)
+#                            Diff = abs(max(Diff)) / abs(min(Diff))
+#                            Diff = int(Diff > Diff_threshold)
                         
                         #print(Diff)
                         if Diff == 0:
@@ -255,6 +261,8 @@ else:
 
 focus_indexes= [x for x in range(len(Names)) if Names[x] in Focus]
 
+if args.coarse:
+    print('statistics will be smoothed, using a savgol filter of order {0} and a bin size of {1}'.format(args.sg_order,args.bin))
 
 Blocks = Merge_class(Ref_profiles,focus_indexes,Out,args.threshold,args.bin,args.outlier)
 
@@ -329,7 +337,7 @@ def chromosome_collections(df, y_positions, height,  **kwargs):
         del_width = True
         df['width'] = df['end'] - df['start']
     for chrom, group in df.groupby('chrom'):
-        print(chrom)
+        
         yrange = (y_positions[chrom], height)
         xranges = group[['start', 'width']].values
         yield BrokenBarHCollection(
@@ -453,6 +461,9 @@ ax.tick_params(axis='y', which='major', pad=30)
 ax.set_yticks([chrom_centers[i] for i in chromosome_list])
 ax.set_yticklabels(chromosome_list, fontsize = 5)
 ax.axis('tight')
+
+if args.id:
+    Subject= args.id
 
 plt.savefig(Home + 'Ideo_' + Subject +'_CHR' + str(chromosomes[-1]).zfill(2)+'_st' + str(min(ideo.start)) + '_Z' +str(args.threshold)+ '_bin'+ str(args.bin)+'.png',bbox_inches = 'tight')
 

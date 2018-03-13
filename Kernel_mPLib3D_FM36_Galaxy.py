@@ -276,7 +276,6 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
                     ms.fit(data[Focus_labels,:])
                     labels = ms.labels_
                     
-                    #n_clusters_ = len(labels_unique)
                     Tree = {x:[Focus_labels[y] for y in range(len(labels)) if labels[y] == x] for x in [g for g in list(set(labels)) if g != -1]}
                 
                 SpaceX = {x:data[Tree[x],:] for x in Tree.keys()}
@@ -284,15 +283,13 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
                 
                 
                 for hill in SpaceX.keys():
-                    #Crease = [sum([Apples[hill][y]==x for y in range(len(Apples[hill]))]) / float(len(Apples[hill])) for x in Geneo.keys()]
                     if len(Tree[hill]) <= 3:
                         continue
                     grid.fit(data[Tree[hill],:])
-                    #print("best bandwidth: {0}".format(grid.best_estimator_.bandwidth))
-                    
+                                        
                     # use the best estimator to compute the kernel density estimate
                     kde = grid.best_estimator_
-                    #Quanted_set = kde.sample(KDE_samples)
+                    
                     P_dist = kde.score_samples(data[Tree[hill],:])
                     Dist = kde.score_samples(data)
                     P_dist= np.nan_to_num(P_dist)
@@ -354,11 +351,11 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
                     ##### Normalized kde outliers (simpler is better)
                         Quanted_set = data[Where[0]:Where[1],:]
                         Set_ref = np.vstack({tuple(row) for row in Quanted_set})
-                        #if len(Set_ref) < 3:
-                        if 1 > 0:
+                        
+                        if KDE_tool == 'sklearn':
                             grid.fit(Quanted_set)
                             kde = grid.best_estimator_
-                            #Quanted_set = kde.sample(KDE_samples)
+                            
                             P_dist = kde.score_samples(Quanted_set)
                         else:
                             kde = stats.gaussian_kde(Quanted_set.T)
@@ -382,7 +379,7 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
                     ###################            ###################
                     ## KDE estimation on filtered parental data set ##
                     ###################            ###################
-                    #print Below
+                    
                     Indexes = range(Quanted_set.shape[0])
                     
                     Indexes = [x for x in Indexes if x not in Below]
@@ -419,8 +416,6 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
                     ### Neutrality tests of filtered reference pop KDE derived log-Likelihoods.
                     #Normality.append(scipy.stats.mstats.normaltest(P_dist)[1])
                     ######
-                    CDF = [len([y for y in P_dist if y <= x]) / float(len(P_dist)) for x in Fist]
-                    #Fist = (Fist - np.mean(P_dist)) / np.std(P_dist)
                     if normalize == 'CDF':
                         if np.std(P_dist)== 0:
                             Fist= np.array([int(Fist[x] in P_dist) for x in range(len(Fist))])
@@ -451,9 +446,6 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
         Index += 1
     
     Geno.close()
-    
-    #rm /gs7k1/home/jgarcia/Likes/COMP/*
-    #qsub -N Bubba -V -q normal.q -b y python -u Launch.py Launch_PO.py 5
     
     Out= {CHR:{Points[star]:Points_out[star] for star in range(len(Points))}}
     
