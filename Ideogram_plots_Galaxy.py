@@ -107,7 +107,6 @@ def Merge_class(Ref_profiles,focus_indicies,Out,Diff_threshold,BIN,X_threshold):
         Likes = {x:[Likes[bl][x] for bl in sorted(Likes.keys())] for x in range(N_pops)}
         Likes = {x:np.array(Likes[x]) for x in Likes.keys()}
         
-        
         Topo = []
         
         #range_Parents = [x + Aro.shape[0] for x in range(Daddy.shape[0])]
@@ -118,7 +117,7 @@ def Merge_class(Ref_profiles,focus_indicies,Out,Diff_threshold,BIN,X_threshold):
             Guys = np.nan_to_num(Guys)
             Guys = [[[y,0][int(y<=X_threshold)] for y in x] for x in Guys]
             
-            Test = [int(x < X_threshold) for x in np.amax(np.array(Guys),axis = 0)]
+            Test = [int(x <= X_threshold) for x in np.amax(np.array(Guys),axis = 0)]
             
             if args.coarse:
                 
@@ -131,7 +130,8 @@ def Merge_class(Ref_profiles,focus_indicies,Out,Diff_threshold,BIN,X_threshold):
             
             maxim = np.argmax(Guys,axis = 1)
             where_X = [x for x in range(Guys.shape[0]) if Test[x] == 1]
-            #where_X = [x for x in range(Guys.shape[0]) if len([c for c in Guys[x,:3] if c <= .0001]) == 3]
+            
+            #
             Consex = [x for x in it.combinations(range(N_pops),2)]
             if Consex:
                 for h in range(len(maxim)):
@@ -143,11 +143,10 @@ def Merge_class(Ref_profiles,focus_indicies,Out,Diff_threshold,BIN,X_threshold):
                         if max(Diff) <= X_threshold:
                             Diff = 0
                         else:
-                            Diff = int(len([x for x in Diff if x <= .1]) == 1)
-#                            Diff = abs(max(Diff)) / abs(min(Diff))
-#                            Diff = int(Diff > Diff_threshold)
+#                            Diff = int(len([x for x in Diff if x <= Diff_threshold]) == 1)
+                            Diff = abs(max(Diff)) / abs(min(Diff))
+                            Diff = int(Diff > Diff_threshold)
                         
-                        #print(Diff)
                         if Diff == 0:
                             CL.append(j)
                     
@@ -162,35 +161,34 @@ def Merge_class(Ref_profiles,focus_indicies,Out,Diff_threshold,BIN,X_threshold):
                 for h in range(len(maxim)):
                     maxim[h] = int(10*Guys[h,0])    
             
-            #Similar = [sum(Guys[g,:] == np.amax(Guys,axis=1)[g]) for g in range(Guys.shape[0])]
-            #Similar = [sum(Guys[g,:] == 0) for g in range(Guys.shape[0])]
-            #Similar = [int(maxim[x] > 3 or sum(Guys[x,:] == 0) > 2 and maxim[x] != 3) + 1 for x in range(len(maxim))]
-            Similar = [int(sum(Guys[x,:] <= 0) == Guys.shape[1] and maxim[x] != 3) + 1 for x in range(len(maxim))]
-            
-            peaks = [Points[x] for x in range(len(Points)) if Similar[x] == 1]
-            where_peaks = [x for x in range(len(Points)) if Similar[x] == 1]
-            
-            d = 'none'
-            if peaks:
-                for l in range(len(Similar)):
-                    if Similar[l] == 1:
-                        if d == 'none' and l > 0:
-                            maxim[:l] = [maxim[l] for x in range(l)]
-                        d = l
-                    if Similar[l] > 1:
-                        if d != 'none':
-                            #if max(Guys[l,:]) > 0:
-                            #    Close = [x for x in range(Guys.shape[1]) if Guys[l,x] == max(Guys[l,:])]
-                            #    maxim[l] = sum(Close) + 3
-                            #else:
-                            Distances = [abs(peaks[x] - Points[l]) for x in range(len(peaks))]
-                            #print(maxim[l],maxim[where_peaks[Distances.index(min(Distances))]],Similar[l])
-                            maxim[l] = maxim[where_peaks[Distances.index(min(Distances))]]                 
-            
+#            Similar = [sum(Guys[g,:] == np.amax(Guys,axis=1)[g]) for g in range(Guys.shape[0])]
+#            Similar = [sum(Guys[g,:] == 0) for g in range(Guys.shape[0])]
+#            Similar = [int(maxim[x] > 3 or sum(Guys[x,:] == 0) > 2 and maxim[x] != 3) + 1 for x in range(len(maxim))]
+#            Similar = [int(sum(Guys[x,:] <= 0) == Guys.shape[1] and maxim[x] != N_pops) + 1 for x in range(len(maxim))]
+#            
+#            peaks = [Points[x] for x in range(len(Points)) if Similar[x] == 1]
+#            where_peaks = [x for x in range(len(Points)) if Similar[x] == 1]
+#            
+#            d = 'none'
+#            if peaks:
+#                for l in range(len(Similar)):
+#                    if Similar[l] == 1:
+#                        if d == 'none' and l > 0:
+#                            maxim[:l] = [maxim[l] for x in range(l)]
+#                        d = l
+#                    if Similar[l] > 1:
+#                        if d != 'none':
+#                            #if max(Guys[l,:]) > 0:
+#                            #    Close = [x for x in range(Guys.shape[1]) if Guys[l,x] == max(Guys[l,:])]
+#                            #    maxim[l] = sum(Close) + 3
+#                            #else:
+#                            Distances = [abs(peaks[x] - Points[l]) for x in range(len(peaks))]
+#                            #print(maxim[l],maxim[where_peaks[Distances.index(min(Distances))]],Similar[l])
+#                            maxim[l] = maxim[where_peaks[Distances.index(min(Distances))]]                 
+#            
             ###
             ### PARK nber: 1
             ###    
-            
             Topo.append(maxim + 1)
         
         
@@ -259,7 +257,16 @@ if args.focus:
 else:
     Focus = Names
 
-focus_indexes= [x for x in range(len(Names)) if Names[x] in Focus]
+
+Absent= [x for x in Focus if x not in Names]
+
+if len(Absent) > 0:
+    print('The following individuals were not found in the files provided: {}'.format(Absent))
+    print('Analysis will proceed without them.')
+    Focus= [x for x in Focus if x in Names]
+
+focus_indexes = [Names.index(x) for x in Focus]
+
 
 if args.coarse:
     print('statistics will be smoothed, using a savgol filter of order {0} and a bin size of {1}'.format(args.sg_order,args.bin))

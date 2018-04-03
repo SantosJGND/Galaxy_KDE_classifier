@@ -53,6 +53,10 @@ parser.add_argument("--bin",default = 5,type= int,help = "smoothing parameter [s
 ###
 parser.add_argument("--MSprint",action= "store_true",help = "if given prints cluster stats.")
 ###
+parser.add_argument("--VARprint",action= "store_true",help = "if given prints PC explained variance per window. If PCA is not chosen just prints out 0's")
+###
+parser.add_argument("--id",type= str,default= '2',help = "Give your analysis an ID. default is set to integer 2")
+###
 parser.add_argument("-c",action = "store_true",help = "specific accession choice file")
 ###
 parser.add_argument("-w",type = int,default = 200, help = "Window size - markers")
@@ -216,6 +220,8 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
     Points = []
     Points_out = []
     
+    PC_var= []
+    
     Win = 0
     Index = 0
     Intervals = []
@@ -223,7 +229,7 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
     Construct = recursively_default_dict()
     
     for line in Geno:
-        Codes = [0,1,2,0,0,0,0,0,0,nan]
+        Codes = [0,nan,2,0,0,0,0,0,0,nan]
         d = Miss[Index][0]
         if Index > end:
             break
@@ -248,8 +254,9 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
                 data[:,:-1] = b
                 
                 if DIMr == 'PCA':
-                    pca = PCA(n_components=n_comp, whiten=False,svd_solver='randomized')
-                    data = pca.fit_transform(data)
+                    pca = PCA(n_components=n_comp, whiten=False,svd_solver='randomized').fit(data)
+                    data = pca.transform(data)
+                    PC_var.append([x for x in pca.explained_variance_])
                     
                 if DIMr == 'NMF':
                     from sklearn.decomposition import NMF
@@ -394,6 +401,7 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
                         Fist = kde.score_samples(data)
                         P_dist = np.nan_to_num(P_dist)
                         Fist = np.nan_to_num(Fist)
+                    
                     if KDE_tool == 'scipy':
                         Craft = Quanted_set[Indexes,:]
                         ### Resampling from estimate distribution is
@@ -404,6 +412,7 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
                         Fist = np.log(kde(data.T))
                         P_dist = np.nan_to_num(P_dist)
                         Fist = np.nan_to_num(Fist)
+                    
                     if sum(np.isnan(P_dist)) == len(P_dist):
                         if len(Likes[D]) == 0:
                             Likes[D].append([int(x in range(Where[0],Where[1])) for x in range(data.shape[0])])
@@ -447,9 +456,14 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
     
     Geno.close()
     
+    if args.dr == 'PCA':
+        PC_var= {CHR:{Points[star]:PC_var[star] for star in range(len(Points))}}
+    else:
+        PC_var= {CHR:{Points[star]:[0]*n_comp for star in range(len(Points))}}
+    
     Out= {CHR:{Points[star]:Points_out[star] for star in range(len(Points))}}
     
-    return {CHR:{start:Likes}},{CHR:Construct}, Out
+    return {CHR:{start:Likes}},{CHR:Construct}, Out, PC_var
 
 
 ################  ###################  ###############################  ###################
@@ -486,16 +500,17 @@ results = pool.map(what, listJobs)
 Clover= {CHR: recursively_default_dict() for CHR in range(1,13)}
 Construct= {CHR: recursively_default_dict() for CHR in range(1,13)}
 Out= {CHR: recursively_default_dict() for CHR in range(1,13)}
-
+PC_var= {CHR: recursively_default_dict() for CHR in range(1,13)}
 
 for element in results:
     for k in element[0].keys():
         Clover[k].update(element[0][k])
         Out[k].update(element[2][k])
         Construct[k].update(element[1][k])
-
+        PC_var[k].update(element[3][k])
 
 Topo= {CHR:recursively_default_dict()}
+
 
 for repas in Clover.keys():
     print(repas)
@@ -505,8 +520,7 @@ for repas in Clover.keys():
         for block in sorted(Clover[repas].keys()):
             for reef in range(len(Parents)):
                 Topo[CHR][reef].extend(Clover[repas][block][reef])
-        
-#        Topo[repas]= Smooth_class(Likes,Out[repas],args.threshold,args.bin,args.outlier)
+
 
 Points = sorted(Out[CHR].keys())
 
@@ -514,8 +528,9 @@ Points = sorted(Out[CHR].keys())
 ############# WRITE ####################################################
  ############## ######################################################
 
-start= 1
-print('writting to directory ' + Home)
+start= args.id
+
+print('writting analysis id:{0} to directory {1}'.format(args.id,Home))
 
 Output = open(Home + "Blocks_Request_st"+str(start)+"_CHR" + str(CHR).zfill(2) + ".txt","w")
 
@@ -544,7 +559,6 @@ Output.close()
 #
 #
 
-
 if args.MSprint == True:
     Output= open(Home + 'Blocks_profiles_st'+str(start)+'_CHR'+ str(CHR).zfill(2)+ '.txt','w')
     
@@ -562,6 +576,22 @@ if args.MSprint == True:
             Output.write(str(cl) + '\t')
             Output.write('\t'.join([str(round(x,5)) for x in Construct[CHR][prf][cl]]))
             Output.write('\n')
+    
+    Output.close()
+
+
+if args.VARprint == True:
+    Output= open(Home + 'Blocks_ExVAR_st'+str(start)+'_CHR'+ str(CHR).zfill(2)+ '.txt','w')
+    
+    Output.write('CHR\tIN\t' + '\t'.join(['PC{0}'.format(x + 1) for x in range(args.ncomp)]))
+    
+    Output.write("\n")
+    
+    for prf in PC_var[CHR].keys():
+        Output.write(str(CHR) + '\t')
+        Output.write(str(int(prf)) + '\t')
+        Output.write('\t'.join([str(round(x,5)) for x in PC_var[CHR][prf]]))
+        Output.write('\n')
     
     Output.close()
 
