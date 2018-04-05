@@ -94,7 +94,7 @@ def read_refs(index_file):
     
     indxs = {gop:[x for x in indxs[gop].keys()] for gop in indxs.keys()}
     
-    return indxs, [x for x in indxs.keys()]
+    return indxs, [x for x in sorted(indxs.keys())]
 
 
 ####
