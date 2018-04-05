@@ -76,4 +76,4 @@ cypher= codes(Parents)
 
 cypher.to_csv('codes.txt',sep= '\t')
 
-
+print('written color-code map to: codes.txt')
