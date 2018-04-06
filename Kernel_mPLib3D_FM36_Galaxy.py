@@ -82,13 +82,13 @@ args = parser.parse_args()
 
 ########## Complementary files.
 
-def read_refs(index_file):
+def read_refs(index_file,Fam_lib):
     indxs = recursively_default_dict()
     
     Input = open(index_file,'r')
     for line in Input:
         line = line.split()
-        indxs[int(line[0])][int(line[1])] = []
+        indxs[int(line[0])][Fam_lib[line[1]]] = []
     
     Input.close()
     
@@ -106,8 +106,8 @@ MissG, Gindex = BIMread(args.bim)
 
 GenoSUF = args.geno
 
-admx_lib, Crossed = read_refs(args.admx)
-refs_lib, Parents = read_refs(args.ref)
+admx_lib, Crossed = read_refs(args.admx,Fam)
+refs_lib, Parents = read_refs(args.ref,Fam)
 
 admx_lib.update(refs_lib)
 

@@ -43,25 +43,3 @@ qsub -N ideo_12 -q normal.q -V -b yes python -u Ideogram_plots_Galaxy.py \
 --out /work/jgarcia/Simu/test_.05_.2/
 
 
-#### track codes
-qsub -N get_codes -q normal.q -V -b y python -u track_codes.py \
---ref /gs7k1/home/jgarcia/PO_Core/refs_CORE.txt \
-
-
-#### targeted analysis, ideogram and app.py output
-qsub -N cBas_Galaxy-test -q normal.q -l mem_free=50G -V -b yes python -u targeted_analysis.py \
-/work/jgarcia/PO_lunch/COMP/Blocks_Request_st2_CHR10.txt \
-/work/jgarcia/PO_lunch/COMP/Blocks_profiles_st2_CHR10.txt \
---fam /gs7k1/home/jgarcia/olde_home/FILTER_GENO/F3G/NG_001.fam \
---ref /gs7k1/home/jgarcia/PO_Core/refs_CORE.txt \
---focus /work/jgarcia/PO_lunch/cBasmati_names.txt \
---target 3 \
---id cBas_Galaxy-test \
---height 10 --width 18 \
---threshold 5 --outlier .0001 \
---CHR 10 \
---start 15000000 --end 21000000 \
---shared 0 --ms .1 \
---plot --reduc --app \
---coarse
-

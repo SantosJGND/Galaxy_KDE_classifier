@@ -7,8 +7,8 @@ visualisation tools we deemed useful for inference of evolutionary relationships
 ## Kernel Density Estimation -- script: Kernel_mPLib3D_FM36_Galaxy.py
 
 The initial analysis is conducted following a machine learning approach \n
-of dimensionality reduction and Kernel density estimation. The latter was selected for the frequent \n
-lack of local priors, and the often convoluted history of modern domesticated populations (insert refrence). \n
+of dimensionality reduction and kernel density estimation. The latter was selected for the frequent \n
+lack of local priors, and the often convoluted history of modern domesticated populations (insert reference). \n
 The use of Kernel Density Estimation for the identification both of local mislabelling (genetic exchanges between \n
 reference populations) and the presence of outlier material among hybrids (possible introgressions from  \n
 differentiated sources). Follow this series of series of [jupyter notebooks](https://github.com/Joaos3092/Genetic-data-analysis) \n
@@ -17,7 +17,7 @@ for a step-by-step explanation on how KDE can be used for these purposes.
 This analysis is conducted on the basis of a crawling window of fixed size of genetic markers. Window size, \n
 dimensionality reduction, the number of axis to retain in feature space and the level of heterozygosity allowed \n
 for are customizable. If PCA is chosen for dimensionality reduction, the user can chose to print the variance \n
-of each axis along the crawl.
+of each axis along the crawl (--VARprint, boolean).
 
 Parallel to the estimation of local supervised distributions, an unsupervised clustering using the MeanShift algorithm \n
 (Comaniciu & Meer, 2002) is performed. KD estimates of each cluster identified are stored. These are necessary for downstream analysis \n
@@ -49,9 +49,9 @@ A savitsky golay filter is automatically applied if the flag '--coarse' is not p
 
 Because we allow for intermediate classes for plotting and to guide other steps of the analysis, population labels are recoded. \n
 In the following section, we shall discuss how to perform a targeted analysis of cluster associations on the data extracted \n
-during the genome crawl. In order to direct this code the user must be know the code-label map produced. code_track.py takes the \n
+during the genome crawl. In order to direct this code the user must know the code-label map produced. code_track.py takes the \n
 reference file used for the supervised analysis to replicate the codes produced and the colors associated with each code in the \n
-ideograms.
+ideogram plots.
 
 ## combining information -- script: gff_Blocksmerge.py
 
@@ -70,10 +70,10 @@ considerable genetic variation through the years, be it through mutation or the 
 
 The idea is this: from a purely informational point of view, our supervised classification has served the purpose of simplifying our genomic \n
 landscape into a handful of signals we can read. We can now pinpoint contradictory signals along the genomes of particular accessions which would, \n
-in a genome wide analysis, have resulted in intermediate or even outlier positions. Separate analyses of cleaner groups of signals can inform us \n
+in a genome-wide analysis, have resulted in intermediate or even outlier positions. Separate analyses of cleaner groups of signals can inform us \n
 on the origins a given material more precisely.
 
-The script *targeted_analysis.py* takes the one or multiple targets (read code_track.py output, column _code_) and a list of individuals the \n
+The script *targeted_analysis.py* takes one or multiple targets (read code_track.py output, column _code_) and a list of individuals the \n
 user wishes to focus on. The script proceeds to identify the windows of the genome crawl at which the focal accessions are classed to the code \n
 provided. Profiles of clusters these individuals are associated with at these windows are then queried (_--MSprint_ must have been toggled \n
 when first running the crawl). Individual to profile association is done using a minimum threshold defined by the user. 

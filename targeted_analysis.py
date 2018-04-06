@@ -97,12 +97,6 @@ def recursively_default_dict():
 
 Home= 'Analyses_' + args.id
 
-
-FAM = "/gs7k1/home/jgarcia/olde_home/FILTER_GENO/F3G/NG_001.fam"
-Ident = '/gs7k1/home/jgarcia/PO_Core/Rice_Identifiers.txt'
-Geno_Q = "/gs7k1/home/jgarcia/olde_home/FILTER_GENO/SplitGENO/GENO_total.4.Q"
-File_home= '/work/jgarcia/PO_lunch/COMP/'
-
 ########## Complementary files.
 
 def read_focus(index_file):
@@ -118,19 +112,20 @@ def read_focus(index_file):
     return indxs
 
 
-def read_refs(index_file):
+
+def read_refs(index_file,Fam_lib):
     indxs = recursively_default_dict()
     
     Input = open(index_file,'r')
     for line in Input:
         line = line.split()
-        indxs[int(line[0])][int(line[1])] = []
+        indxs[int(line[0])][Fam_lib[line[1]]] = []
     
     Input.close()
     
     indxs = {gop:[x for x in indxs[gop].keys()] for gop in indxs.keys()}
     
-    return indxs, [x for x in indxs.keys()]
+    return indxs, [x for x in sorted(indxs.keys())]
 
 
 def Merge_class(Ref_profiles,focus_indicies,Out,Diff_threshold,BIN,X_threshold):
@@ -639,7 +634,7 @@ Fam = FAMread(args.fam)
 Diff_threshold = args.threshold
 X_threshold= args.outlier
 
-refs_lib, Parents = read_refs(args.ref)
+refs_lib, Parents = read_refs(args.ref,Fam)
 
 
 if args.focus:
