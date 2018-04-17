@@ -118,7 +118,7 @@ def Merge_class(Ref_profiles,focus_indicies,Out,Diff_threshold,BIN,X_threshold):
             Guys = np.nan_to_num(Guys)
             Guys = [[[y,0][int(y<=X_threshold)] for y in x] for x in Guys]
             
-            Test = [int(x <= X_threshold) for x in np.amax(np.array(Guys),axis = 0)]
+            Test = [int(x <= X_threshold) for x in np.amax(np.array(Guys),axis = 0)]     
             
             if args.coarse:
                 
@@ -283,6 +283,7 @@ for here in range(len(Focus)):
     
     Ideo.extend(Stock)
 
+
 ###########################################
 ###########################################
 import matplotlib
@@ -345,12 +346,12 @@ def compress_ideo(df,chromosome_list):
                 continue
             if index == (Size - 1):
                 if row.gieStain.iloc[0] == First:
-                    new_set.append([chromosome_list[CHR],start,Out[Chr][max(sub.start)],First])
+                    new_set.append([chromosome_list[CHR],start,Out[Chr][max(df.start)],First])
                 else:
-                    new_set.append([chromosome_list[CHR],start,Out[Chr][max(sub.start)],First])
+                    new_set.append([chromosome_list[CHR],start,Out[Chr][max(df.start)],First])
                     First = row.gieStain.iloc[0]
                     start = row.start.iloc[0]
-                    new_set.append([chromosome_list[CHR],start,Out[Chr][max(sub.start)],First])
+                    new_set.append([chromosome_list[CHR],start,Out[Chr][max(df.start)],First])
             else:
                 if row.gieStain.iloc[0] == First:
                     continue
@@ -358,7 +359,7 @@ def compress_ideo(df,chromosome_list):
                     new_set.append([chromosome_list[CHR],start,row.start.iloc[0]-1,First])
                     First = row.gieStain.iloc[0]
                     start = row.start.iloc[0]
-        
+    
     new_set = pd.DataFrame(new_set,columns = ['chrom', 'start', 'end', 'gieStain'])
     return new_set
 

@@ -40,7 +40,7 @@ qsub -N get_codes -q normal.q -V -b y python -u track_codes.py \
 
 
 #### targeted analysis, ideogram and app.py output
-qsub -N cBas_Galaxy-test -q normal.q -l mem_free=50G -V -b yes python -u targeted_analysis.py \
+qsub -N Madagascar_Japonica -q normal.q -l mem_free=50G -V -b yes python -u targeted_analysis.py \
 /work/jgarcia/PO_lunch/COMP/Blocks_Request_st2_CHR10.txt \
 /work/jgarcia/PO_lunch/COMP/Blocks_profiles_st2_CHR10.txt \
 --fam /gs7k1/home/jgarcia/olde_home/FILTER_GENO/F3G/NG_001.fam \
