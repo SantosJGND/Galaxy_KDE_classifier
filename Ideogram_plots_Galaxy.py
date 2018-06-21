@@ -56,6 +56,8 @@ parser.add_argument("--chrom_height",type= float, default= 1, help= "height of i
 
 parser.add_argument("--chrom_gap",type= float,default= 0,help= "gap between ideograms.")
 
+parser.add_argument("--fontsize",type= float,default= 5,help= "label font size.")
+
 parser.add_argument("--height",type= float, default= 10,help= "figure height, in inches.")
 
 parser.add_argument("--width",type= float,default= 20,help= "figure width, in inches.")
@@ -66,6 +68,9 @@ args = parser.parse_args()
 
 
 Home= args.out
+
+if len(Home) > 0:
+    Home= Home + '/'
 
 ########## Complementary files.
 
@@ -107,63 +112,63 @@ def Merge_class(Ref_profiles,focus_indicies,Out,Diff_threshold,BIN,X_threshold):
         print("number of reference populations: {0}".format(N_pops))
         Likes = {x:[Likes[bl][x] for bl in sorted(Likes.keys())] for x in range(N_pops)}
         Likes = {x:np.array(Likes[x]) for x in Likes.keys()}
+    
+    Topo = []
+    
+    #range_Parents = [x + Aro.shape[0] for x in range(Daddy.shape[0])]
+    #range_Crossed = [x for x in range(Aro.shape[0])]
+    
+    for acc in focus_indicies:
+        Guys = np.array([Likes[x][:,acc] for x in range(N_pops)])
+        Guys = np.nan_to_num(Guys)
+        Guys = [[[y,0][int(y<=X_threshold)] for y in x] for x in Guys]
         
-        Topo = []
+        Test = [int(x <= X_threshold) for x in np.amax(np.array(Guys),axis = 0)]     
         
-        #range_Parents = [x + Aro.shape[0] for x in range(Daddy.shape[0])]
-        #range_Crossed = [x for x in range(Aro.shape[0])]
+        if args.coarse:
+            
+            Guys = [savgol_filter(x,BIN,args.sg_order,mode = "nearest") for x in Guys]
+            Test = savgol_filter(Test,BIN,args.sg_order,mode = "nearest")
+            Test = [round(x) for x in Test]
         
-        for acc in focus_indicies:
-            Guys = np.array([Likes[x][:,acc] for x in range(N_pops)])
-            Guys = np.nan_to_num(Guys)
-            Guys = [[[y,0][int(y<=X_threshold)] for y in x] for x in Guys]
-            
-            Test = [int(x <= X_threshold) for x in np.amax(np.array(Guys),axis = 0)]     
-            
-            if args.coarse:
-                
-                Guys = [savgol_filter(x,BIN,args.sg_order,mode = "nearest") for x in Guys]
-                Test = savgol_filter(Test,BIN,args.sg_order,mode = "nearest")
-                Test = [round(x) for x in Test]
-            
-            #
-            Guys = np.array(Guys).T
-            
-            maxim = np.argmax(Guys,axis = 1)
-            where_X = [x for x in range(Guys.shape[0]) if Test[x] == 1]
-            
-            #
-            Consex = [x for x in it.combinations(range(N_pops),2)]
-            if Consex:
-                for h in range(len(maxim)):
-                    CL = []
-                    for j in Consex:
-                        Diff = Guys[h,j]
-                        if maxim[h] not in j or len([x for x in Diff if x < X_threshold]) > 0:
-                            continue
-                        if max(Diff) <= X_threshold:
-                            Diff = 0
-                        else:
-#                            Diff = int(len([x for x in Diff if x <= Diff_threshold]) == 1)
-                            Diff = abs(max(Diff)) / abs(min(Diff))
-                            Diff = int(Diff > Diff_threshold)
-                        
-                        if Diff == 0:
-                            CL.append(j)
+        #
+        Guys = np.array(Guys).T
+        
+        maxim = np.argmax(Guys,axis = 1)
+        where_X = [x for x in range(Guys.shape[0]) if Test[x] == 1]
+        
+        #
+        Consex = [x for x in it.combinations(range(N_pops),2)]
+        if Consex:
+            for h in range(len(maxim)):
+                CL = []
+                for j in Consex:
+                    Diff = Guys[h,j]
+                    if maxim[h] not in j or len([x for x in Diff if x < X_threshold]) > 0:
+                        continue
+                    if max(Diff) <= X_threshold:
+                        Diff = 0
+                    else:
+#                            Diff = 1 - int(len([x for x in Diff if x >= X_threshold]) == 2)
+                        Diff = abs(max(Diff)) / abs(min(Diff))
+                        Diff = int(Diff > Diff_threshold)
                     
-                    if len(CL) == 2:
-                        maxim[h] = 7
-                    if len(CL) == 1:
-                        maxim[h] = sum(CL[0]) + N_pops
-            
-            maxim[where_X] = N_pops
-            
-            if not Consex:
-                for h in range(len(maxim)):
-                    maxim[h] = int(10*Guys[h,0])    
-            
-            
-            Topo.append(maxim + 1)
+                    if Diff == 0:
+                        CL.append(j)
+                
+                if len(CL) == 2:
+                    maxim[h] = 7
+                if len(CL) == 1:
+                    maxim[h] = sum(CL[0]) + N_pops
+        
+        maxim[where_X] = N_pops
+        
+        if not Consex:
+            for h in range(len(maxim)):
+                maxim[h] = int(10*Guys[h,0])    
+        
+        
+        Topo.append(maxim + 1)
         
         
         Topo = np.array(Topo).T
@@ -441,7 +446,7 @@ ax.tick_params(axis = 'x',pad = 10)
 
 ax.tick_params(axis='y', which='major', pad=30)
 ax.set_yticks([chrom_centers[i] for i in chromosome_list])
-ax.set_yticklabels(chromosome_list, fontsize = 5)
+ax.set_yticklabels(chromosome_list, fontsize = args.fontsize)
 ax.axis('tight')
 
 if args.id:

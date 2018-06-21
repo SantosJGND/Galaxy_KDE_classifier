@@ -36,7 +36,7 @@ qsub -N ideo_12 -q normal.q -V -b yes python -u Ideogram_plots_Galaxy.py \
 
 #### track codes
 qsub -N get_codes -q normal.q -V -b y python -u track_codes.py \
---ref /gs7k1/home/jgarcia/PO_Core/refs_CORE.txt \
+--ref /gs7k1/home/jgarcia/PO_Core/refs_CORE.txt
 
 
 #### targeted analysis, ideogram and app.py output

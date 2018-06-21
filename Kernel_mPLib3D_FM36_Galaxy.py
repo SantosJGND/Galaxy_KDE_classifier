@@ -118,6 +118,9 @@ BIN = args.bin
 
 Home = args.out
 
+if len(args.out) > 0:
+    Home= args.out + '/'
+
 print('Number of markers: {}'.format(len(MissG[CHR])))
 
 print('Population labels: {}'.format(Geneo.keys()))
@@ -136,6 +139,48 @@ def Set_up(Chr0,Chr1,Sub,MissG):
         for i in range(len(Steps)-1):
             Settings.append([Chr,Steps[i],Steps[i+1]-1])
     return Settings
+
+
+def local_sampling_correct(data):
+    ncomp= data.shape[1]
+    pca = PCA(n_components=ncomp, whiten=False,svd_solver='randomized')
+    features= pca.fit_transform(data)
+    
+    N= 100
+    bandwidth = estimate_bandwidth(features, quantile=0.2)
+    if bandwidth <= 1e-3:
+        bandwidth = 0.1
+    
+    params = {'bandwidth': np.linspace(np.min(features), np.max(features),20)}
+    grid = GridSearchCV(KernelDensity(algorithm = "ball_tree",breadth_first = False), params,verbose=0)
+    
+    ## perform MeanShift clustering.
+    ms = MeanShift(bandwidth=bandwidth, bin_seeding=True, cluster_all=False, min_bin_freq=20)
+    ms.fit(features)
+    labels1 = ms.labels_
+    label_select = {y:[x for x in range(len(labels1)) if labels1[x] == y] for y in sorted(list(set(labels1)))}
+    
+    ## Extract the KDE of each cluster identified by MS.
+    Proxy_data= []
+    
+    for lab in label_select.keys():
+        if len(label_select[lab]) < 3:
+            continue
+        Quanted_set= features[label_select[lab],:]
+        
+        grid.fit(Quanted_set)
+        
+        kde = grid.best_estimator_
+        Extract= kde.sample(N)
+        Return= pca.inverse_transform(Extract)
+        Proxy_data.extend(Return)
+    
+    Proxy_data= np.array(Proxy_data)
+    
+    pca = PCA(n_components=ncomp, whiten=False,svd_solver='randomized').fit(Proxy_data)
+    New_features= pca.transform(data)
+    
+    return New_features
 
 
 
@@ -254,10 +299,11 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
                 data[:,:-1] = b
                 
                 if DIMr == 'PCA':
-                    pca = PCA(n_components=n_comp, whiten=False,svd_solver='randomized').fit(data)
-                    data = pca.transform(data)
-                    PC_var.append([x for x in pca.explained_variance_])
-                    
+                pca = PCA(n_components=n_comp, whiten=False,svd_solver='randomized').fit(data)
+                data = pca.transform(data)
+                PC_var.append([x for x in pca.explained_variance_])
+                data= local_sampling_correct(data)
+                
                 if DIMr == 'NMF':
                     from sklearn.decomposition import NMF
                     data = NMF(n_components=n_comp, init='random', random_state=0).fit_transform(data)
@@ -293,7 +339,7 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
                     if len(Tree[hill]) <= 3:
                         continue
                     grid.fit(data[Tree[hill],:])
-                                        
+                    
                     # use the best estimator to compute the kernel density estimate
                     kde = grid.best_estimator_
                     
@@ -436,10 +482,10 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
                         Fist = [round(x,5) for x in Fist]
                     if Control == True:
                         Fist = Fist * Mortal
-                
+                    
                     Accurate.append(Fist)
                     Likes[D].append(Fist)
-                  
+                
                 
                 Points.append(Miss[window_start][0])
                 Points_out.append(Miss[Index][0])
