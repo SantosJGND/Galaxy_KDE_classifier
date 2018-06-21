@@ -299,10 +299,10 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
                 data[:,:-1] = b
                 
                 if DIMr == 'PCA':
-                pca = PCA(n_components=n_comp, whiten=False,svd_solver='randomized').fit(data)
-                data = pca.transform(data)
-                PC_var.append([x for x in pca.explained_variance_])
-                data= local_sampling_correct(data)
+                    pca = PCA(n_components=n_comp, whiten=False,svd_solver='randomized').fit(data)
+                    data = pca.transform(data)
+                    PC_var.append([x for x in pca.explained_variance_])
+                    data= local_sampling_correct(data)
                 
                 if DIMr == 'NMF':
                     from sklearn.decomposition import NMF
