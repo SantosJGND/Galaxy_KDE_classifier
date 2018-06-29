@@ -49,19 +49,13 @@ parser.add_argument("--proc",help = "number of processors requested")
 
 parser.add_argument("--out",type= str,default= '',help = "output directory")
 
-parser.add_argument("--bin",default = 5,type= int,help = "smoothing parameter [savgol filter]")
-###
 parser.add_argument("--MSprint",action= "store_true",help = "if given prints cluster stats.")
 ###
 parser.add_argument("--VARprint",action= "store_true",help = "if given prints PC explained variance per window. If PCA is not chosen just prints out 0's")
 ###
 parser.add_argument("--id",type= str,default= '2',help = "Give your analysis an ID. default is set to integer 2")
 ###
-parser.add_argument("-c",action = "store_true",help = "specific accession choice file")
-###
 parser.add_argument("-w",type = int,default = 200, help = "Window size - markers")
-### 
-parser.add_argument("--threshold",type = float,default = 1.6,help = "Intermediate classification threshold")
 ### 
 parser.add_argument("--clustmethod",default = "MeanShift",choices = ["MeanShift","DBscan","HDBscan"],help = "Clustering method to extract reference specific clusters. MS, dbscan and hdbsan available. MS preferred")
 ###
@@ -200,8 +194,8 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
     ### Here define some things
     Window = args.w
     
-    #### Intermediate classification threshold
-    Diff_threshold = args.threshold
+    #### Het. filter
+    
     Filter_Het = args.het
     
     
@@ -210,8 +204,6 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
     n_comp = args.ncomp
     PC_var_lim = .01
     ##
-    ## savgol filter parameter
-    BIN = args.bin
     
     ## Chose clustering method
     Method = args.clustmethod
@@ -475,7 +467,7 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
                         if np.std(P_dist)== 0:
                             Fist= np.array([int(Fist[x] in P_dist) for x in range(len(Fist))])
                         else:
-                            Fist = scipy.stats.norm(np.mean(P_dist),np.std(P_dist)).cdf(Fist)
+                            Fist = scipy.stats.norm(np.mean(P_dist),np.std(P_dist)).pdf(Fist)
                     else:
                         Fist = kde(data.T)
                         Fist = Fist / max(Fist)
