@@ -1,12 +1,12 @@
 # Kernel classification.
 
-Local haplotype classification and data exploration. This software was built with the purpose of compaing local 
+Local haplotype classification and data exploration. This software was built with the purpose of comparing local 
 genetic distributions of diverging biological populations. The comparison of distributions is accompanied by a set of 
 visualisation tools we deemed useful for inference of evolutionary relationships.
 
-_Note_: Application of this pipeline of analysis should take into considerations the particular qualities of the 3K RG. 
-The assumptions stipulated for the simulations undertaken in Santos _et al_. 2019 are only almost met because of 
-the stable and high density of genetic markers and the near complete homozygosity of rice genomes, to add to the quality of this data.
+_Note_: Application of this pipeline of analysis should take into considerations the particular qualities of the data set for which 
+they were developped, the 3K Rice Genomes. The assumptions stipulated for the simulations undertaken in Santos _et al_. 2019 are only 
+almost met because of the stable and high density of genetic markers and the near complete homozygosity of rice genomes, to add to the quality of this data.
 
 ## Kernel Density Estimation -- script: Kernel_mPLib3D_FM36_Galaxy.py
 
