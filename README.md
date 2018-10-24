@@ -43,7 +43,7 @@ defined thresholds of comparison and an outlier threshold.
 
 A savitsky golay filter is automatically applied if the flag '--coarse' is not passed. We recommend the use of this flag.
 
-# Downstram Analysis
+# Downstream Analysis
 
 ## -- script: code_track.py
 

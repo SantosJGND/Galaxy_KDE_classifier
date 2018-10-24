@@ -1,26 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu Feb 01 15:43:00 2018
-
-@author: jgarcia
-"""
-
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Jan 23 14:23:15 2018
-
-@author: jgarcia
-"""
-
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Dec 06 10:58:26 2017
-
-@author: jgarcia
-"""
-
-# -*- coding: utf-8 -*-
-"""
 Created on Sun Mar 05 13:01:08 2017
 
 @author: jgarcia
@@ -77,6 +56,9 @@ args = parser.parse_args()
 ########## Complementary files.
 
 def read_refs(index_file,Fam_lib):
+    '''
+    ref file indexes individuals to population code.
+    '''
     indxs = recursively_default_dict()
     
     Input = open(index_file,'r')
@@ -91,15 +73,15 @@ def read_refs(index_file,Fam_lib):
     return indxs, [x for x in sorted(indxs.keys())]
 
 
-####
-
+#### read names (Fam file in same order as genotype data)
 Fam = FAMread(args.fam)
 
+#### read SNP info (.bim file, same order and number as in geno file)
 MissG, Gindex = BIMread(args.bim)
-
 
 GenoSUF = args.geno
 
+#### read admix and reference ind files.
 admx_lib, Crossed = read_refs(args.admx,Fam)
 refs_lib, Parents = read_refs(args.ref,Fam)
 
@@ -135,7 +117,14 @@ def Set_up(Chr0,Chr1,Sub,MissG):
     return Settings
 
 
+#### This function was deprecated following the study of the impact of sampling on PCA projections.
+#### see: https://github.com/Joaos3092/Genetic-data-analysis/blob/master/8.%20Controlling%20for%20size.ipynb
+
 def local_sampling_correct(data):
+    '''
+    This function uses the MeanShift algorithm to identify clusters in the data and sample equally from each.
+    The sampled observations are used to create a new PCA transformation that is applied to the original data.
+    '''
     ncomp= data.shape[1]
     pca = PCA(n_components=ncomp, whiten=False,svd_solver='randomized')
     features= pca.fit_transform(data)
@@ -179,6 +168,11 @@ def local_sampling_correct(data):
 
 
 def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
+    '''
+    Main Engine. This function performs calculations along a slidding window.
+    
+    Parameters used are provided by the user.
+    '''
     
     #### Fam
     #### Whose
@@ -211,15 +205,18 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
     ## Outlier filter method: DBSCAN, NMF, Perc, Z, Isolation_forest.
     Outlier_method = args.outmethod
     
-    
     quantile_filter_1 = 20 ### quantile filter for Percentile based outlier.
     
     ## KDE estimation tool
-    # Attention: sklearn uses GridsearchCV. While this implies more parameters, it 
+    ## Attention: sklearn uses GridsearchCV. While this implies more parameters, it 
     ## nonetheless ensures the construction of a KDE when scipy KDE would break down.
     ## This is because scipy KDE will always estimate bandwidth itself, thus using the points given only,
     ## while sklearn KDE allows the bandwidth to be passed. This allows us in turn to set a minimum,
-    ## and ensure it to never come to 0.
+    ## and ensure it to never come to 0. 
+    ##
+    ## A population genetics note: At the local genomic level the bandwidth is our proxy of genetic differentiation.
+    ## It is thus important to for us to control from which material is used to estimate it.
+    
     ## sklearn, scipy
     
     KDE_tool = 'sklearn'
@@ -231,21 +228,15 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
     ### Resampling size for CDF estimates.
     KDE_samples = 1000
     
-    # Controlling for global likelihood.
+    ## Controlling for global likelihood.
     Control = False
     
-    
-    ##
-    ##
     ##
     ##
     ### These things define themselves
     
-    
     Crossed = [x for x in Geneo.keys() if x not in Parents]
-    
-    #t = [x for x in Miss.keys() if Miss[x][0] >= start and Miss[x][0] <= end]
-    
+        
     Whose = list(it.chain(*Geneo.values()))
     SequenceStore = {fy:[] for fy in Whose}
     
@@ -282,6 +273,10 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
                 window_start = Index - Window + 1
                 Seq = SequenceStore
                 
+                ### Nan to Numeric. 
+                ### Important to pay attention to this when applying this method to other data sets.
+                ### Allowed here for the homozygous nature of rice genomes and the high quality of the data.
+                ### think of replacing by by more performant imputation procedures.
                 Aro = np.nan_to_num(np.array([Seq[x] for x in it.chain(*[Geneo[x] for x in Crossed])]))
                 
                 Daddy = np.nan_to_num(np.array([Seq[x] for x in it.chain(*[Geneo[x] for x in Parents])]))
@@ -304,7 +299,7 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
                 params = {'bandwidth': np.linspace(np.min(data), np.max(data),Bandwidth_split)}
                 grid = GridSearchCV(KernelDensity(algorithm = "ball_tree",breadth_first = False), params,verbose=0)
                 
-                #####################################
+                ######################################
                 ####### TEST global Likelihood #######
                 ######################################
                 Focus_labels = range(data.shape[0])
@@ -348,9 +343,10 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
                     
                 
                 
-                ######################################### 
-                ############# TEST #####################
-                #########################################
+                    ######################################### 
+                ############# Reference KDE treatment ################
+                    #########################################
+                
                 
                 for D in range(len(Parents)):
                     Where = [sum([len(Geneo[x]) for x in Parents[0:D]])+Aro.shape[0],sum([len(Geneo[x]) for x in Parents[0:(D+1)]])+Aro.shape[0]]
@@ -392,8 +388,8 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
                             labels = ms.labels_
                             y_pred = [int(x == -1) for x in labels]
                             Below = [x for x in range(len(y_pred)) if y_pred[x] == 1]
-                    if Outlier_method == 'Z':
                     ##### Normalized kde outliers (simpler is better)
+                    if Outlier_method == 'Z':
                         Quanted_set = data[Where[0]:Where[1],:]
                         Set_ref = np.vstack({tuple(row) for row in Quanted_set})
                         
@@ -409,6 +405,7 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
                         
                         y_pred = scipy.stats.norm(mean(P_dist),np.std(P_dist)).cdf(P_dist)
                         Below = [x for x in range(len(y_pred)) if y_pred[x] <= 5e-3]
+                    
                     #### ISOLATION FOREST ###########################
                     if Outlier_method == 'Isolation_forest':
                         from sklearn.ensemble import IsolationForest
@@ -421,6 +418,7 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
                     else: 
                         Quanted_set = data[Where[0]:Where[1],:]
                         Below = []
+                    
                     ###################            ###################
                     ## KDE estimation on filtered parental data set ##
                     ###################            ###################
@@ -434,7 +432,6 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
                     if KDE_tool == 'sklearn':
                         grid.fit(Quanted_set[Indexes,:])
                         kde = grid.best_estimator_
-                        #Quanted_set = kde.sample(KDE_samples)
                         P_dist = kde.score_samples(Quanted_set)
                         Fist = kde.score_samples(data)
                         P_dist = np.nan_to_num(P_dist)
@@ -461,7 +458,7 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
                         continue
                     
                     ### Neutrality tests of filtered reference pop KDE derived log-Likelihoods.
-                    #Normality.append(scipy.stats.mstats.normaltest(P_dist)[1])
+                    ## Normality.append(scipy.stats.mstats.normaltest(P_dist)[1])
                     ######
                     if normalize == 'CDF':
                         if np.std(P_dist)== 0:
@@ -510,7 +507,7 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
 import multiprocessing as mp
 
 nbProcs= int(args.proc)
-#nbProcs= 4
+
 parameters = Set_up(CHR,CHR + 1,nbProcs,MissG)
 
 
@@ -524,8 +521,6 @@ def what(job):
         return rslt
 
 
-#parameters= [[1,2000,4000],[2,200,2000],[2,2200,3000],[6,23000,26000]]
-
 print(parameters)
 
 listJobs = []
@@ -534,6 +529,11 @@ for setting in parameters:
 
 pool = mp.Pool(processes=nbProcs)
 results = pool.map(what, listJobs)
+
+### The current version is only applied to one genotype file at the time.
+### It was original written to deal with multiple geno files.
+### Different chromosomes still figure in the lines below, this is dealt 
+### withn in the line 554: if Clover[repas]
 
 Clover= {CHR: recursively_default_dict() for CHR in range(1,13)}
 Construct= {CHR: recursively_default_dict() for CHR in range(1,13)}

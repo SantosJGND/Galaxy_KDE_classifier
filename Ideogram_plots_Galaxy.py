@@ -1,16 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Feb 13 14:12:22 2018
-
-@author: jgarcia
-"""
-
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Jan 23 15:17:06 2018
-
-@author: jgarcia
-"""
 
 # -*- coding: utf-8 -*-
 """
@@ -107,6 +94,10 @@ def recursively_default_dict():
 
 
 def Merge_class(Ref_profiles,focus_indicies,Out,Diff_threshold,BIN,X_threshold):
+    '''
+    Receives dictionary of reference p-values by individual by window and chromosome.
+    Return dictionary of individual classifications according to the parameters provided.
+    '''
     Blocks_genome = recursively_default_dict()
     
     for CHR in Ref_profiles.keys():
@@ -185,11 +176,13 @@ def Merge_class(Ref_profiles,focus_indicies,Out,Diff_threshold,BIN,X_threshold):
 
 
 def read_3D_profiles(File_list):
-    
+    '''
+    Reads Blocks files of reference KDE derived p-values across genomic windows.
+    Returns dictionary: {CHR: {Windows: {refs: [p-value list]}}}
+    '''
     s0 = time.time()
     
     Blocks= recursively_default_dict()
-#    Profiles= recursively_default_dict()
     Out = recursively_default_dict()
     Names= []        
     
@@ -333,6 +326,10 @@ def compute_serial_matrix(dist_mat,method="ward"):
     
     return seriated_dist, res_order, res_linkage
 
+###
+### Deprecated final order based on classification clustering.
+### currently returning ideograms in order provided in Focus file.
+###
 '''
 Blocks_matrix= [[Blocks[c][w] for w in Blocks[c].keys()] for c in Blocks.keys()]
 Blocks_matrix= np.array(Blocks_matrix).T
@@ -363,8 +360,6 @@ ordered_dist_mat, res_order, res_linkage = compute_serial_matrix(Blocks_distance
 
 #################### PROCEED
 ####################
-
-
 
 chromosome_list = []
 
@@ -514,8 +509,6 @@ color_lookup = {
 # Add a new column for colors
 
 ideo = compress_ideo(ideo,chromosome_list)
-
-#ideo = ideo[(ideo.start > 5.06e6) & (ideo.start < 7.06e6)]
 
 ideo['colors'] = ideo['gieStain'].apply(lambda x: tuple([round(y / float(255),1) for y in color_lookup[x]]))
 # Add a new column for width
