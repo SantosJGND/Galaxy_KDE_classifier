@@ -8,9 +8,6 @@ _Note_: Application of this pipeline of analysis should take into considerations
 it was developped. The requirements for an informative output are only nearly met given the stable and high density of genetic markers,
  a state of near complete homozygosity, to add to the quality of the data.
 
- - Fuller DQ, Sato YI, Castillo C, Qin L, Weisskopf AR, Kingwell-Banham EJ, Song J, Ahn SM and Van Etten, J. 2010. Consilience of genetics and archaeobotany in the entangled history of rice. Archae and Anthro Sci 2: 115-131.
- 
-
 ## Kernel Density Estimation -- script: Kernel_mPLib3D_FM36_Galaxy.py
 
 The initial analysis is conducted following a machine learning approach 
@@ -91,4 +88,7 @@ Through the *--app* option, a python dash application is produced for the explor
 their location along the genome of focal accessions. Procfile, requirements and gitignore files are automatically produced so that the 
 appplication can be readily set up on any server as well as locally.
 
+
 - Comaniciu D and Meer P. 2002. Mean shift: A robust approach toward feature space analysis. IEEE Trans Patt Mach Int 24: 603-619.
+
+- Fuller DQ, Sato YI, Castillo C, Qin L, Weisskopf AR, Kingwell-Banham EJ, Song J, Ahn SM and Van Etten, J. 2010. Consilience of genetics and archaeobotany in the entangled history of rice. Archae and Anthro Sci 2: 115-131.
