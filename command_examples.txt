@@ -15,13 +15,15 @@ qsub -N FM36 -V -q bigmem.q -pe parallel_smp 10 -l mem_free=20G -b y python -u K
 
 
 qsub -N ideo_1 -q normal.q -V -b yes python -u Ideogram_plots_Galaxy.py \
-/work/jgarcia/PO_lunch/COMP/Blocks_Request_st1_CHR01.txt \
+/work/jgarcia/PO_lunch/Blocks_Request_st3_CHR06.txt \
 --focus /work/jgarcia/PO_lunch/cBasmati_names.txt \
---CHR 1 \
---height 9 \
---width 18 \
+--CHR 6 \
+--height 5 \
+--width 13 \
 --bin 15 \
---threshold 2
+--threshold 2 \
+--outlier 0.0001 \
+--coarse
 
 
 ### not focusing (plots all inds if --focus not given)
@@ -40,20 +42,40 @@ qsub -N get_codes -q normal.q -V -b y python -u track_codes.py \
 
 
 #### targeted analysis, ideogram and app.py output
-qsub -N Madagascar_Japonica -q normal.q -l mem_free=50G -V -b yes python -u targeted_analysis.py \
-/work/jgarcia/PO_lunch/COMP/Blocks_Request_st2_CHR10.txt \
-/work/jgarcia/PO_lunch/COMP/Blocks_profiles_st2_CHR10.txt \
+qsub -N  -q normal.q -l mem_free=80G -V -b yes python -u targeted_analysis.py \
+/work/jgarcia/PO_lunch/Blocks_Request_st3_CHR01.txt \
+/work/jgarcia/PO_lunch/Blocks_profiles_st3_CHR01.txt \
+/work/jgarcia/PO_lunch/Blocks_Request_st3_CHR02.txt \
+/work/jgarcia/PO_lunch/Blocks_profiles_st3_CHR02.txt \
+/work/jgarcia/PO_lunch/Blocks_Request_st3_CHR03.txt \
+/work/jgarcia/PO_lunch/Blocks_profiles_st3_CHR03.txt \
+/work/jgarcia/PO_lunch/Blocks_Request_st3_CHR04.txt \
+/work/jgarcia/PO_lunch/Blocks_profiles_st3_CHR04.txt \
+/work/jgarcia/PO_lunch/Blocks_Request_st3_CHR05.txt \
+/work/jgarcia/PO_lunch/Blocks_profiles_st3_CHR05.txt \
+/work/jgarcia/PO_lunch/Blocks_Request_st3_CHR06.txt \
+/work/jgarcia/PO_lunch/Blocks_profiles_st3_CHR06.txt \
+/work/jgarcia/PO_lunch/Blocks_Request_st3_CHR07.txt \
+/work/jgarcia/PO_lunch/Blocks_profiles_st3_CHR07.txt \
+/work/jgarcia/PO_lunch/Blocks_Request_st3_CHR08.txt \
+/work/jgarcia/PO_lunch/Blocks_profiles_st3_CHR08.txt \
+/work/jgarcia/PO_lunch/Blocks_Request_st3_CHR09.txt \
+/work/jgarcia/PO_lunch/Blocks_profiles_st3_CHR09.txt \
+/work/jgarcia/PO_lunch/Blocks_Request_st3_CHR10.txt \
+/work/jgarcia/PO_lunch/Blocks_profiles_st3_CHR10.txt \
+/work/jgarcia/PO_lunch/Blocks_Request_st3_CHR11.txt \
+/work/jgarcia/PO_lunch/Blocks_profiles_st3_CHR11.txt \
+/work/jgarcia/PO_lunch/Blocks_Request_st3_CHR12.txt \
+/work/jgarcia/PO_lunch/Blocks_profiles_st3_CHR12.txt \
 --fam /gs7k1/home/jgarcia/olde_home/FILTER_GENO/F3G/NG_001.fam \
 --ref /gs7k1/home/jgarcia/PO_Core/refs_CORE.txt \
---focus /work/jgarcia/PO_lunch/cBasmati_names.txt \
---target 3 \
---id cBas_Galaxy-test \
---height 10 --width 18 \
---threshold 5 --outlier .0001 \
---CHR 10 \
---start 15000000 --end 21000000 \
+--focus /gs7k1/home/jgarcia/PO_Core/CORE_CRG.txt \
+--random 10000 \
+--id cBasmati_Jap \
+--height 7 --width 18 \
+--threshold 4 --outlier .00001 \
 --shared 0 --ms .1 \
---plot --reduc --app \
+--reduc --app \
 --coarse
 
 

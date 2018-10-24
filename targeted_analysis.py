@@ -49,6 +49,8 @@ parser.add_argument("--ref",type= str,help = "reference accessions indexes in ge
 
 parser.add_argument("--CHR",type= int,help = "chromosome to draw ideogram of.")
 
+parser.add_argument("--random",type= int, default= 0, help = "if a number greater than 0 is provided, performs analysis on a random sample of targetted clusters of that size.")
+
 parser.add_argument("--start",type= int,help = "where to begin, in markers. Only makes sense if --CHR is also used.")
 
 parser.add_argument("--end",type= int,help = "where to end, in markers. Only makes sense if --CHR is also used.")
@@ -723,6 +725,7 @@ for bl in Blocks[CHR].keys() if \
 len([x for x in focus_indexes if Blocks[CHR][bl][x] in target]) / float(len(Focus)) >= threshold} \
 for CHR in Blocks.keys() if CHR in chromosomes}
 
+
 Coordinates = [[[[CHR,bl,Out[CHR][bl],x] for x in Chose_profiles[CHR][bl]] for bl in sorted(Chose_profiles[CHR].keys())] for CHR in sorted(Chose_profiles.keys())]
 Coordinates = [z for z in it.chain(*[y for y in it.chain([x for x in it.chain(*Coordinates)])])]
 Coordinates= np.array(Coordinates)
@@ -730,6 +733,16 @@ Coordinates= np.array(Coordinates)
 Clover= [[[Profiles[CHR][bl][x] for x in Chose_profiles[CHR][bl]] for bl in sorted(Chose_profiles[CHR].keys())] for CHR in sorted(Chose_profiles.keys())]
 Clover= [z for z in it.chain(*[y for y in it.chain(*Clover)])]
 Clover= np.array(Clover)
+
+print(Clover.shape)
+
+
+if args.random > 0:
+    Who= np.random.choice(range(Coordinates.shape[0]),args.random)
+    
+    Coordinates= Coordinates[Who,:]
+    Clover= Clover[Who,:]
+    
 
 ####
 #### Pre processing and dimensionality reduction of matrix
@@ -838,7 +851,7 @@ if args.plot == True:
     
     for aim in Blancs.keys():
         if len(Focus)== 1:
-            plot_ideo(Blancs[aim],Blocks.keys(),Focus,aim,args.chrom_height,args.chrom_gap,args.height,args.width,Ideo_home,args.id)
+            plot_ideo2(Blancs[aim],Blocks.keys(),Focus,aim,args.chrom_height,args.chrom_gap,args.height,args.width,Ideo_home,args.id)
         else:
             for Chr in chromosomes:
                 plot_ideo2(Blancs[aim],[Chr],Focus,aim,args.chrom_height,args.chrom_gap,args.height,args.width,Ideo_home,args.id)

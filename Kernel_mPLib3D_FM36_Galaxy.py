@@ -63,7 +63,7 @@ parser.add_argument("--het",type = float,default = 5e-2, help = "Heterozygosity 
 ### 
 parser.add_argument("--dr",default = 'NMF',help = "Dimensionality reduction. options: PCA, NMF")
 ### 
-parser.add_argument("--ncomp",type = int,default = 4,help = "Number of components kept in case of PCA reduction")
+parser.add_argument("--ncomp",type = int,default = 5,help = "Number of components kept in case of PCA reduction")
 ### 
 parser.add_argument("--outmethod",default = "None",help = "Outlier filter of population refs method. options: DBSCAN, NMF, Perc, Z, Isolation_forest.")
 ###

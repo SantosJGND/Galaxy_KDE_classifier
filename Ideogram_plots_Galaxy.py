@@ -42,7 +42,13 @@ parser.add_argument("--end",type= int,help = "where to end, in markers. Only mak
 
 parser.add_argument("--out",type= str,default= '',help = "output directory")
 
+parser.add_argument("--clust",type= str,default= 'None',help = "Do you wish to cluster ideograms based on similarity? provide method for scipy linkage function")
+
 parser.add_argument("--coarse",action='store_false',help= 'to smooth or not to smooth.')
+
+parser.add_argument("--bornes",type= int,default= 0,help = "bornes")
+
+parser.add_argument("--square",action= 'store_true',help= 'Draw rectangle around region of interest. only makes sense when "bornes" argument is used too.')
 
 parser.add_argument("--bin",default = 5,type= int,help = "smoothing parameter, must be uneven [savgol filter]")
 
@@ -261,14 +267,103 @@ else:
 
 
 if args.start:
-    Blocks= {Chr:{x:Blocks[Chr][x] for x in Blocks[Chr].keys() if x >= args.start} for Chr in Blocks.keys()}
+    Blocks= {Chr:{x:Blocks[Chr][x] for x in Blocks[Chr].keys() if Out[Chr][x] >= args.start - args.bornes} for Chr in Blocks.keys()}
     if not args.CHR:
         print("start was selected with no CHR specification.")
 
 if args.end:
-    Blocks= {Chr:{x:Blocks[Chr][x] for x in Blocks[Chr].keys() if x <= args.end} for Chr in Blocks.keys()}
+    Blocks= {Chr:{x:Blocks[Chr][x] for x in Blocks[Chr].keys() if x <= args.end + args.bornes} for Chr in Blocks.keys()}
     if not args.CHR:
         print("end was selected with no CHR specification.")
+
+
+#####
+##### Clustering accessions based on classification
+## to use direct similarity (proportion of differences).
+from scipy.spatial.distance import pdist, squareform
+
+##### functions retrieved in https://gmarti.gitlab.io/ml/2017/09/07/how-to-sort-distance-matrix.html
+### used here for the order only.
+def seriation(Z,N,cur_index):
+    '''
+        input:
+            - Z is a hierarchical tree (dendrogram)
+            - N is the number of points given to the clustering process
+            - cur_index is the position in the tree for the recursive traversal
+        output:
+            - order implied by the hierarchical tree Z
+            
+        seriation computes the order implied by a hierarchical tree (dendrogram)
+    '''
+    
+    if cur_index < N:
+        return [cur_index]
+    else:
+        left = int(Z[cur_index-N,0])
+        right = int(Z[cur_index-N,1])
+        return (seriation(Z,N,left) + seriation(Z,N,right))
+
+def compute_serial_matrix(dist_mat,method="ward"):
+    '''
+        input:
+            - dist_mat is a distance matrix
+            - method = ["ward","single","average","complete"]
+        output:
+            - seriated_dist is the input dist_mat,
+              but with re-ordered rows and columns
+              according to the seriation, i.e. the
+              order implied by the hierarchical tree
+            - res_order is the order implied by
+              the hierarhical tree
+            - res_linkage is the hierarhical tree (dendrogram)
+        
+        compute_serial_matrix transforms a distance matrix into 
+        a sorted distance matrix according to the order implied 
+        by the hierarchical tree (dendrogram)
+    '''
+    
+    N = len(dist_mat)
+    flat_dist_mat = squareform(dist_mat)
+    res_linkage = linkage(flat_dist_mat, method=method,preserve_input=True)
+    res_order = seriation(res_linkage, N, N + N-2)
+    seriated_dist = np.zeros((N,N))
+    a,b = np.triu_indices(N,k=1)
+    seriated_dist[a,b] = dist_mat[ [res_order[i] for i in a], [res_order[j] for j in b]]
+    seriated_dist[b,a] = seriated_dist[a,b]
+    
+    return seriated_dist, res_order, res_linkage
+
+'''
+Blocks_matrix= [[Blocks[c][w] for w in Blocks[c].keys()] for c in Blocks.keys()]
+Blocks_matrix= np.array(Blocks_matrix).T
+
+def Calc_diff(Mat,indexes):
+    
+    Dist_dict= recursively_default_dict()
+    
+    for clev in indexes:
+        dude= Mat[clev,:]
+        
+        for other in indexes:
+            dist= [int(Mat[clev,x] == Mat[other,x]) for x in range(Mat.shape[1])]
+            dist= sum(dist) / float(len(dist))
+            Dist_dict[clev][other]= dist
+    
+    return Dist_dict
+
+Blocks_distances= Calc_diff(Blocks_matrix,focus_indexes)
+
+Blocks_diff= np.array([Blocks_distances[guy] for guy in Blocks_distances.keys()])
+Blocks_diff= squareform(Blocks_diff)
+
+ordered_dist_mat, res_order, res_linkage = compute_serial_matrix(Blocks_distances,args.clust)
+
+'''
+
+
+#################### PROCEED
+####################
+
 
 
 chromosome_list = []
@@ -431,6 +526,16 @@ figsize = (args.width, args.height)
 
 fig = plt.figure(figsize=figsize)
 ax = fig.add_subplot(111)
+
+if args.square:
+    from matplotlib.patches import Rectangle
+    someX= args.start
+    someY= -10
+    
+    currentAxis= plt.gca()
+    currentAxis.add_patch(Rectangle((someX,someY),
+    args.end-args.start,len(chromosome_list) + 20, 
+    fill= None, alpha= 1, linewidth= 5))
 
 # Now all we have to do is call our function for the ideogram data...
 print("adding ideograms...")
