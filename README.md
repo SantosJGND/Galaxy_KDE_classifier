@@ -1,4 +1,4 @@
-# Kernel classification.
+## Kernel classification.
 
 Local haplotype classification and data exploration. This software was built with the purpose of comparing local 
 genetic distributions of diverging biological populations. The comparison of distributions is accompanied by a set of 
@@ -8,7 +8,7 @@ _Note_: Application of this pipeline of analysis should take into considerations
 it was developped. The requirements for an informative output are only nearly met given the stable and high density of genetic markers,
  a state of near complete homozygosity, to add to the quality of the data.
 
-## Kernel Density Estimation -- script: Kernel_mPLib3D_FM36_Galaxy.py 
+### Kernel Density Estimation -- script: Kernel_mPLib3D_FM36_Galaxy.py 
 
 The initial analysis is conducted following a machine learning approach 
 of dimensionality reduction and kernel density estimation. 
@@ -29,7 +29,7 @@ At K == 4, this would imply 6 two way intermediate classes. Unless reference pop
 can become messy.
 
 
-## Ideogram plotting -- script: Ideogram_plots_Galaxy.py
+### Ideogram plotting -- script: Ideogram_plots_Galaxy.py
 
 The first layer of analysis following the genome crawl is the visualization of local statistics pertaining 
 to the distributions of the reference populations chosen. This step constitutes an exploration of variation 
@@ -42,9 +42,9 @@ outlier threshold to control the assignment into pure, intermediate and outlier 
 
 A savitsky golay filter is automatically applied if the flag '--coarse' is not passed. We recommend the use of this flag.
 
-# Downstream Analysis
+## Downstream Analysis
 
-## -- script: code_track.py
+### -- script: code_track.py
 
 Because we allow for intermediate classes for plotting and to guide other steps of the analysis, population labels are recoded. 
 In the following section, we shall discuss how to perform a targeted analysis of cluster associations on the data extracted 
@@ -52,19 +52,18 @@ during the genome crawl. In order to direct this code the user must know the lab
 reference file used for the supervised analysis to replicate the codes produced and the colors associated with each code in the 
 ideogram plots.
 
-## -- script: gff_Blocksmerge.py combining information 
+### -- script: gff_Blocksmerge.py combining information 
 
 The script gff_Blocksmerge.py produces this merged data set of local classification and genic location data. it takes a gff file, 
 and the user can chose to focus on particular elements (miRNA, genes or both), as well as the columns of information on each 
 to extract, by name.
 
-**Context** 
-The genome crawl divides the genome into a set of overlapping windows. Our downstream analysis queries these windows for associations. 
+**Context.** The genome crawl divides the genome into a set of overlapping windows. Our downstream analysis queries these windows for associations. 
 For various reasons it can be usefull to know which genes are present at each window along the genome. 
 
 *Note:* this information can be easily included in the end product dash application.
 
-## -- script: targeted_analysis.py
+### -- script: targeted_analysis.py
 
 The script *targeted_analysis.py* takes one or multiple target labels (read code_track.py output, column _code_) and a list of individuals the 
 user wishes to focus on. The script proceeds to identify the windows of the genome crawl at which the focal accessions are classed to the code 
@@ -77,8 +76,7 @@ Through the *--app* option, a python dash application is produced for the explor
 their location along the genome of focal accessions. Procfile, requirements and gitignore files are automatically produced so that the 
 appplication can be readily set up on any server as well as locally.
 
-**Context**
-The endpoint of association analysis in population genetics. Following local classificaiton, estimates are available of the genome-wide 
+**Context.** The endpoint of association analysis in population genetics. Following local classificaiton, estimates are available of the genome-wide 
 proximity of each accession to each reference population in play. However, reference populations can be large and structured, in particular 
 older populations that might have amassed considerable genetic variation through the years, be it through mutation or the incorporation 
 of novel genetic material from cryptic sources.
