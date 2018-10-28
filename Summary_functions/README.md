@@ -6,11 +6,11 @@ The application of the following tools follows a first layer of analysis of loca
 Reference KDEs were extracted across data sets of contiguous bi-allelic markers. Sample-level statistics
 were extracted at each window and stored in matrices *Blocks_Request* and *Blocks_profiles* (optional).
 
-The generation of ideograms allows an initial, visual exploration of this output. 
+The generation of ideograms allows an initial, visual exploration of this output (1). This repository 
+provides tools for a quantitative exploration of this data.
 
-- Core Asian rice variation (3K RG, Alexandrov *et al*. 2014).
-
-This repository provides tools for a quantitative exploration of this data.
+- *1* We performed an analysis of Core Asian rice variation (3K RG, Alexandrov *et al*. 2014). A classification
+of that data was performed. Core Ideograms were stored on another repository: [Core Ideograms](https://imgur.com/a/lpD0r31).
 
 ### gff_Blocksmerge.py - combining information 
 
