@@ -54,25 +54,6 @@ args = parser.parse_args()
 
 
 ########## Complementary files.
-
-def read_refs(index_file,Fam_lib):
-    '''
-    ref file indexes individuals to population code.
-    '''
-    indxs = recursively_default_dict()
-    
-    Input = open(index_file,'r')
-    for line in Input:
-        line = line.split()
-        indxs[int(line[0])][Fam_lib[line[1]]] = []
-    
-    Input.close()
-    
-    indxs = {gop:[x for x in indxs[gop].keys()] for gop in indxs.keys()}
-    
-    return indxs, [x for x in sorted(indxs.keys())]
-
-
 #### read names (Fam file in same order as genotype data)
 Fam = FAMread(args.fam)
 
@@ -116,54 +97,6 @@ def Set_up(Chr0,Chr1,Sub,MissG):
             Settings.append([Chr,Steps[i],Steps[i+1]-1])
     return Settings
 
-
-#### This function was deprecated following the study of the impact of sampling on PCA projections.
-#### see: https://github.com/Joaos3092/Genetic-data-analysis/blob/master/8.%20Controlling%20for%20size.ipynb
-
-def local_sampling_correct(data):
-    '''
-    This function uses the MeanShift algorithm to identify clusters in the data and sample equally from each.
-    The sampled observations are used to create a new PCA transformation that is applied to the original data.
-    '''
-    ncomp= data.shape[1]
-    pca = PCA(n_components=ncomp, whiten=False,svd_solver='randomized')
-    features= pca.fit_transform(data)
-    
-    N= 100
-    bandwidth = estimate_bandwidth(features, quantile=0.2)
-    if bandwidth <= 1e-3:
-        bandwidth = 0.1
-    
-    params = {'bandwidth': np.linspace(np.min(features), np.max(features),20)}
-    grid = GridSearchCV(KernelDensity(algorithm = "ball_tree",breadth_first = False), params,verbose=0)
-    
-    ## perform MeanShift clustering.
-    ms = MeanShift(bandwidth=bandwidth, bin_seeding=True, cluster_all=False, min_bin_freq=20)
-    ms.fit(features)
-    labels1 = ms.labels_
-    label_select = {y:[x for x in range(len(labels1)) if labels1[x] == y] for y in sorted(list(set(labels1)))}
-    
-    ## Extract the KDE of each cluster identified by MS.
-    Proxy_data= []
-    
-    for lab in label_select.keys():
-        if len(label_select[lab]) < 3:
-            continue
-        Quanted_set= features[label_select[lab],:]
-        
-        grid.fit(Quanted_set)
-        
-        kde = grid.best_estimator_
-        Extract= kde.sample(N)
-        Return= pca.inverse_transform(Extract)
-        Proxy_data.extend(Return)
-    
-    Proxy_data= np.array(Proxy_data)
-    
-    pca = PCA(n_components=ncomp, whiten=False,svd_solver='randomized').fit(Proxy_data)
-    New_features= pca.transform(data)
-    
-    return New_features
 
 
 
