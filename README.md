@@ -69,7 +69,7 @@ A savitsky golay filter is automatically applied if the flag '--coarse' is not p
 
 
 **3K RG, Asian Core Classification**
-- (Core Chromsome Ideograms)[https://imgur.com/a/lpD0r31]
+- [Core Chromsome Ideograms](https://imgur.com/a/lpD0r31)
 
 ## Summary Analysis - /Summary_functions
 
