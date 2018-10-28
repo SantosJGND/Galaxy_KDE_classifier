@@ -1,5 +1,5 @@
 
-# Summary statistics.
+## Summary Analysis.
 
 The application of the following tools follows a first layer of analysis of local genomic windows.
 
@@ -31,6 +31,9 @@ parameters.
 
 Calculate the density of target classifications across genomic regions for a group of selected individuals.
 
+*app ready*: this script outputs a dash application that combines an analysis of the distribution of classifications
+with with the coordinates of genic regions in the merged gff-to-blocks file.
+
 ### pVal_gff_overlap.py - KDE overlap by genes
 
 Calculate a measure of distribution overlap across genes in merged gff file. Distribution overlap is calculated
@@ -39,3 +42,12 @@ reference samples only.
 
 ### Complement - Galaxy_summary_tools.py
 
+## Output examples.
+
+Summary output, accompanied of jupyter notebooks or, in the case of `Intermediate_labels_Exp.py` analysis, dash application.
+
+- **/Summary_classification**: Group and individual classification summaries.
+
+- **/Intermediate**: Genome-wide density of selected classifications across group of interest.
+
+- **/Overlap_gff**: Distribution overlap measure at regions of interest.

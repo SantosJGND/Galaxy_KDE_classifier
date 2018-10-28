@@ -1,0 +1,4 @@
+	tag	chr	start	end	ID	Name	Note	cName	Overlap
+15340	23167309	4	23171426	23176369	Os04g39020	Os04g39020	aldehyde dehydrogenase%2C putative%2C expressed	badh	1.143
+20298	1759774	6	1765622	1770656	Os06g04200	Os06g04200	starch synthase%2C putative%2C expressed	Waxy	0.622
+24076	6054229	7	6062889	6069317	Os07g11020	Os07g11020	rc - bHLH transcription factor regulating proanthocyanidin production in seeds%2C expressed	rc	0.914

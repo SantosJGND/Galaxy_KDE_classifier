@@ -73,7 +73,7 @@ A savitsky golay filter is automatically applied if the flag '--coarse' is not p
 Ideograms provide a visual summary of reference KDE assingments across local data sets. This repository provides tools for 
 a quantitative analysis of local KDE estimates.
 
-## /Downstream Analysis - /Downstream_functions
+## Downstream Analysis - /Downstream_functions
 
 The study of reference distributions at local genomic regions consists of the first layer in a process of inference. This repository 
 provides tools to complement supervised information with targeted measures of local genetic correlation and distance.
