@@ -39,7 +39,7 @@ can become messy.
 **Output**
 
 - *Blocks_Request*: reference-specific KDE estimated *p*-values across windows surveyed. 
-- (optional) **Blocks_profiles*: unsupervised KDE estimated *p*-values across windows surveyed.
+- (optional) *Blocks_profiles*: unsupervised KDE estimated *p*-values across windows surveyed.
 
 **Example files**
 
@@ -67,49 +67,16 @@ A savitsky golay filter is automatically applied if the flag '--coarse' is not p
 
 - Ideogram plot (.png)
 
-## Downstream Analysis
 
-### -- script: code_track.py
+## Summary Analysis - /Summary_functions
 
-Because we allow for intermediate classes for plotting and to guide other steps of the analysis, population labels are recoded. 
-In the following section, we shall discuss how to perform a targeted analysis of cluster associations on the data extracted 
-during the genome crawl. In order to direct this code the user must know the label-to-code map produced. code_track.py takes the 
-reference file used for the supervised analysis to replicate the codes produced and the colors associated with each code in the 
-ideogram plots.
+Ideograms provide a visual summary of reference KDE assingments across local data sets. This repository provides tools for 
+a quantitative analysis of local KDE estimates.
 
-### -- script: gff_Blocksmerge.py combining information 
+## /Downstream Analysis - /Downstream_functions
 
-The script gff_Blocksmerge.py produces this merged data set of local classification and genic location data. it takes a gff file, 
-and the user can chose to focus on particular elements (miRNA, genes or both), as well as the columns of information on each 
-to extract, by name.
-
-**Context.** The genome crawl divides the genome into a set of overlapping windows. Our downstream analysis queries these windows for associations. 
-For various reasons it can be usefull to know which genes are present at each window along the genome. 
-
-*Note:* this information can be easily included in the end product dash application.
-
-### -- script: targeted_analysis.py
-
-The script *targeted_analysis.py* takes one or multiple target labels (read code_track.py output, column _code_) and a list of individuals the 
-user wishes to focus on. The script proceeds to identify the windows of the genome crawl at which the focal accessions are classed to the code 
-provided. Profiles of clusters these individuals are associated with at these windows are then queried (_--MSprint_ must have been toggled 
-when first running the crawl). Individual-to-profile association is done using a minimum threshold defined by the user. 
-
-Total profiles extracted are reduced through principal component analysis and Kmeans clustering performed in feature space.
-
-Through the *--app* option, a python dash application is produced for the exploration of associations revealed in the profiles extracted and 
-their location along the genome of focal accessions. Procfile, requirements and gitignore files are automatically produced so that the 
-appplication can be readily set up on any server as well as locally.
-
-**Context.** The endpoint of association analysis in population genetics. Following local classificaiton, estimates are available of the genome-wide 
-proximity of each accession to each reference population in play. However, reference populations can be large and structured, in particular 
-older populations that might have amassed considerable genetic variation through the years, be it through mutation or the incorporation 
-of novel genetic material from cryptic sources.
-
-Our supervised classification has served the purpose of simplifying our genomic landscape into a handful of signals we can read. We can now 
-pinpoint contradictory signals along the genomes of particular accessions which would, in a genome-wide analysis, have resulted in intermediate 
-and even outlier positions. Separate analyses of cleaner groups of signals can inform us on the structure of a given group in more depth.
-
+The study of reference distributions at local genomic regions consists of the first layer in a process of inference. This repository 
+provides tools to complement supervised information with targeted measures of local genetic correlation and distance.
 
 ## References
 

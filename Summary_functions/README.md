@@ -1,0 +1,41 @@
+
+# Summary statistics.
+
+The application of the following tools follows a first layer of analysis of local genomic windows.
+
+Reference KDEs were extracted across data sets of contiguous bi-allelic markers. Sample-level statistics
+were extracted at each window and stored in matrices *Blocks_Request* and *Blocks_profiles* (optional).
+
+The generation of ideograms provides a initial, visual exploration of this output. This repository provides tools for a 
+quantitative exploration of this data.
+
+
+### gff_Blocksmerge.py - combining information 
+
+The script gff_Blocksmerge.py produces this merged data set of local classification and genic location data. it takes a gff file, 
+and the user can chose to focus on particular elements (miRNA, genes or both), as well as the columns of information on each 
+to extract, by name.
+
+**Context.** The genome crawl divides the genome into a set of overlapping windows. Our downstream analysis queries these windows for associations. 
+For various reasons it can be usefull to know which genes are present at each window along the genome. 
+
+*Note:* this information can be easily included in the end product dash application.
+
+
+### Summary_stats.py - Physical classification summary.
+
+Calculate the extent of physical regions assigned to each class by selected individual for a set of pre-determined
+parameters.
+
+### Intermediate_labels_Exp.py - Classification distribution
+
+Calculate the density of target classifications across genomic regions for a group of selected individuals.
+
+### pVal_gff_overlap.py - KDE overlap by genes
+
+Calculate a measure of distribution overlap across genes in merged gff file. Distribution overlap is calculated
+as the sum of proportional differences in assignment to reference distributions. Overlap is measured using 
+reference samples only. 
+
+### Complement - Galaxy_summary_tools.py
+

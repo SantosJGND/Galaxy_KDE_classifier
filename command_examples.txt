@@ -9,7 +9,6 @@ qsub -N FM36 -V -q bigmem.q -pe parallel_smp 10 -l mem_free=20G -b y python -u K
 --admx /gs7k1/home/jgarcia/PO_Core/admx_CORE.txt \
 --proc 10
 
-
 ## test run Ideogram plot:
 ### focusing on the circumBasmati (focus file)
 qsub -N ideo_1 -q normal.q -V -b yes python -u Ideogram_plots_Galaxy.py \
@@ -22,7 +21,6 @@ qsub -N ideo_1 -q normal.q -V -b yes python -u Ideogram_plots_Galaxy.py \
 --threshold 2 \
 --outlier 0.0001 \
 --coarse
-
 
 ### not focusing (plots all inds if --focus not given)
 qsub -N ideo_12 -q normal.q -V -b yes python -u Ideogram_plots_Galaxy.py \
@@ -53,6 +51,60 @@ qsub -N blockMerge -q normal.q -V -b y python -u gff_Blocksmerge.py \
 -o MSU7merge_v2_cdf \
 --id MSU7_blockMerge
 
+
+######################
+###################### Summary Analysis of classification and KDE output
+
+### Summary statistics on region covered by classification
+###	Output by Accession and class.
+
+qsub -N summary_t -q normal.q -V -l mem_free=30G -b yes python -u Summary_stats.py \
+/work/jgarcia/PO_lunch/Blocks_Request_stPC5_CHR12.txt \
+--CHR 12 \
+--summary \
+--coarse \
+--outlier 0.0001 \
+--threshold 4
+
+### classification by region analysis
+## density of intermediate classification along the genome. app ready
+
+qsub -N Intermediate -q normal.q -l mem_free=30G -V -b yes python -u Intermediate_labels_Exp.py \
+/work/jgarcia/PO_lunch/Blocks_Request_st3_CHR12.txt \
+/work/jgarcia/PO_lunch/Blocks_profiles_st3_CHR12.txt \
+--focus /work/jgarcia/PO_lunch/cBasmati_names.txt \
+--target 5,6,7,8 \
+--id Intermediate_cBas \
+--height 140 --width 18 \
+--bin 5 --threshold 2 \
+
+
+### p-value overlap by genic region.
+###
+
+qsub -N Overlap_III -q bigmem.q -l mem_free=20G -V -b yes python -u Intermediate_labels_vIII.py \
+/work/jgarcia/PO_lunch/Blocks_Request_st3_CHR01.txt \
+/work/jgarcia/PO_lunch/Blocks_Request_st3_CHR02.txt \
+/work/jgarcia/PO_lunch/Blocks_Request_st3_CHR03.txt \
+/work/jgarcia/PO_lunch/Blocks_Request_st3_CHR04.txt \
+/work/jgarcia/PO_lunch/Blocks_Request_st3_CHR05.txt \
+/work/jgarcia/PO_lunch/Blocks_Request_st3_CHR06.txt \
+/work/jgarcia/PO_lunch/Blocks_Request_st3_CHR07.txt \
+/work/jgarcia/PO_lunch/Blocks_Request_st3_CHR08.txt \
+/work/jgarcia/PO_lunch/Blocks_Request_st3_CHR09.txt \
+/work/jgarcia/PO_lunch/Blocks_Request_st3_CHR10.txt \
+/work/jgarcia/PO_lunch/Blocks_Request_st3_CHR11.txt \
+/work/jgarcia/PO_lunch/Blocks_Request_st3_CHR12.txt \
+--focus /gs7k1/home/jgarcia/PO_Core/refs_CORE.txt \
+--geneMerge /work/jgarcia/PO_lunch/MSU7merge_v2_cdf/MSU7_blockMerge_v2_cdf.txt \
+--outlier 0.0001 \
+--target 01,02,12 \
+--id Overlap_III \
+--out Pvalue_compare_III
+
+
+######################### Downstream analysis
+#########################
 
 ## track codes
 qsub -N get_codes -q normal.q -V -b y python -u track_codes.py \
