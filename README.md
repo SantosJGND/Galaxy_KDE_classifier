@@ -28,6 +28,23 @@ provided. At K=3, this results in 8 classes in total (3 pure classes, 3 two-way 
 At K == 4, this would imply 6 two way intermediate classes. Unless reference populations are strongly structured, the resulting plots 
 can become messy.
 
+**Input**
+
+- *.geno file*: genotype file, bi-allelic markers. Columns = Inds; Lines = SNPs; Codes: {Reference hom: 0; Het: 1; Alternative Hom: 2}.
+- *.bim file*: SNP information file; plink format.
+- *.fam file*: Individual information file; plink format.
+- *ref file*: Individual to group file, tab delimited. lines: ID (present in .fam file); group code.
+- *admix file*: Individual to group file, tab delimited. lines: ID (present in .fam file); group code.
+
+**Output**
+
+- *Blocks_Request*: reference-specific KDE estimated *p*-values across windows surveyed. 
+- (optional) **Blocks_profiles*: unsupervised KDE estimated *p*-values across windows surveyed.
+
+**Example files**
+
+- Simulations: see /Simulation_related/test_.05_.2
+- Command line: see Command_examples.txt
 
 ### Ideogram plotting -- script: Ideogram_plots_Galaxy.py
 
@@ -41,6 +58,14 @@ For this purpose, the construction of _chromosome paintings_ allows for user def
 outlier threshold to control the assignment into pure, intermediate and outlier classes.
 
 A savitsky golay filter is automatically applied if the flag '--coarse' is not passed. We recommend the use of this flag.
+
+**Input**
+
+- Blocks_request file
+
+**Output**
+
+- Ideogram plot (.png)
 
 ## Downstream Analysis
 
