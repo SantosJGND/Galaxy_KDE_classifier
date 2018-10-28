@@ -1,4 +1,4 @@
-### test run Kernel classification
+## test run Kernel classification
 
 qsub -N FM36 -V -q bigmem.q -pe parallel_smp 10 -l mem_free=20G -b y python -u Kernel_mPLib3D_FM36_Galaxy.py \
 --CHR 2 \
@@ -10,10 +10,8 @@ qsub -N FM36 -V -q bigmem.q -pe parallel_smp 10 -l mem_free=20G -b y python -u K
 --proc 10
 
 
-#### test run Ideogram plot:
+## test run Ideogram plot:
 ### focusing on the circumBasmati (focus file)
-
-
 qsub -N ideo_1 -q normal.q -V -b yes python -u Ideogram_plots_Galaxy.py \
 /work/jgarcia/PO_lunch/Blocks_Request_st3_CHR06.txt \
 --focus /work/jgarcia/PO_lunch/cBasmati_names.txt \
@@ -35,8 +33,28 @@ qsub -N ideo_12 -q normal.q -V -b yes python -u Ideogram_plots_Galaxy.py \
 --bin 10 \
 --threshold 2
 
+#### Merge blocks and gff file:
+qsub -N blockMerge -q normal.q -V -b y python -u gff_Blocksmerge.py \
+/work/jgarcia/PO_lunch/Blocks_Request_st3_CHR01.txt \
+/work/jgarcia/PO_lunch/Blocks_Request_st3_CHR02.txt \
+/work/jgarcia/PO_lunch/Blocks_Request_st3_CHR03.txt \
+/work/jgarcia/PO_lunch/Blocks_Request_st3_CHR04.txt \
+/work/jgarcia/PO_lunch/Blocks_Request_st3_CHR05.txt \
+/work/jgarcia/PO_lunch/Blocks_Request_st3_CHR06.txt \
+/work/jgarcia/PO_lunch/Blocks_Request_st3_CHR07.txt \
+/work/jgarcia/PO_lunch/Blocks_Request_st3_CHR08.txt \
+/work/jgarcia/PO_lunch/Blocks_Request_st3_CHR09.txt \
+/work/jgarcia/PO_lunch/Blocks_Request_st3_CHR10.txt \
+/work/jgarcia/PO_lunch/Blocks_Request_st3_CHR11.txt \
+/work/jgarcia/PO_lunch/Blocks_Request_st3_CHR12.txt \
+--gff /gs7k1/home/jgarcia/MSU_v7.gff3 \
+--extract gene \
+--interest ID,Name,Note \
+-o MSU7merge_v2_cdf \
+--id MSU7_blockMerge
 
-#### track codes
+
+## track codes
 qsub -N get_codes -q normal.q -V -b y python -u track_codes.py \
 --ref /gs7k1/home/jgarcia/PO_Core/refs_CORE.txt
 
@@ -71,7 +89,7 @@ qsub -N  -q normal.q -l mem_free=80G -V -b yes python -u targeted_analysis.py \
 --ref /gs7k1/home/jgarcia/PO_Core/refs_CORE.txt \
 --focus /gs7k1/home/jgarcia/PO_Core/CORE_CRG.txt \
 --random 10000 \
---id cBasmati_Jap \
+--id Global_random \
 --height 7 --width 18 \
 --threshold 4 --outlier .00001 \
 --shared 0 --ms .1 \
