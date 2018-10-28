@@ -6,9 +6,11 @@ The application of the following tools follows a first layer of analysis of loca
 Reference KDEs were extracted across data sets of contiguous bi-allelic markers. Sample-level statistics
 were extracted at each window and stored in matrices *Blocks_Request* and *Blocks_profiles* (optional).
 
-The generation of ideograms provides a initial, visual exploration of this output. This repository provides tools for a 
-quantitative exploration of this data.
+The generation of ideograms allows an initial, visual exploration of this output. 
 
+- Core Asian rice variation (3K RG, Alexandrov *et al*. 2014).
+
+This repository provides tools for a quantitative exploration of this data.
 
 ### gff_Blocksmerge.py - combining information 
 
@@ -51,3 +53,8 @@ Summary output, accompanied of jupyter notebooks or, in the case of `Intermediat
 - **/Intermediate**: Genome-wide density of selected classifications across group of interest.
 
 - **/Overlap_gff**: Distribution overlap measure at regions of interest.
+
+
+## References
+
+- Alexandrov N. (2017) Rice SNP-seek database update: new SNPs, indels, and queries. Nucl. Acids Res. 45(D1):D1075-D1081.
