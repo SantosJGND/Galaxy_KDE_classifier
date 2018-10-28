@@ -19,7 +19,7 @@ to extract, by name.
 **Context.** The genome crawl divides the genome into a set of overlapping windows. Our downstream analysis queries these windows for associations. 
 For various reasons it can be usefull to know which genes are present at each window along the genome. 
 
-*Note:* this information can be easily included in the end product dash application.
+*Note:* this information can be easily included in the an product dash application.
 
 
 ### Summary_stats.py - Physical classification summary.
@@ -32,7 +32,7 @@ parameters.
 Calculate the density of target classifications across genomic regions for a group of selected individuals.
 
 *app ready*: this script outputs a dash application that combines an analysis of the distribution of classifications
-with with the coordinates of genic regions in the merged gff-to-blocks file.
+with the coordinates of genic regions in the merged gff-to-blocks file.
 
 ### pVal_gff_overlap.py - KDE overlap by genes
 
