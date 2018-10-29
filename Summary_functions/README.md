@@ -14,7 +14,7 @@ of that data was performed. Core Ideograms were stored in another repository: [C
 
 ### gff_Blocksmerge.py - combining information 
 
-The script gff_Blocksmerge.py produces this merged data set of local classification and genic location data. it takes a gff file, 
+The script gff_Blocksmerge.py produces a merged data set of local classification and genic location data. It takes a gff file, 
 and the user can chose to focus on particular elements (miRNA, genes or both), as well as the columns of information on each 
 to extract, by name.
 
