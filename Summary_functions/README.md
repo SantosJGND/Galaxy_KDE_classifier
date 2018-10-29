@@ -21,7 +21,7 @@ to extract, by name.
 **Context.** The genome crawl divides the genome into a set of overlapping windows. Our downstream analysis queries these windows for associations. 
 For various reasons it can be usefull to know which genes are present at each window along the genome. 
 
-*Note:* this information can be easily included in the an product dash application.
+*Note:* this information can be easily included in an end-product dash application.
 
 
 ### Summary_stats.py - Physical classification summary.
