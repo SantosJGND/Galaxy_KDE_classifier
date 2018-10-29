@@ -29,6 +29,9 @@ For various reasons it can be usefull to know which genes are present at each wi
 Calculate the extent of physical regions assigned to each class by selected individual for a set of pre-determined
 parameters.
 
+**Input**
+- Blocks_request file
+
 ### Intermediate_labels_Exp.py - Classification distribution
 
 Calculate the density of target classifications across genomic regions for a group of selected individuals.
@@ -36,11 +39,20 @@ Calculate the density of target classifications across genomic regions for a gro
 *app ready*: this script outputs a dash application that combines an analysis of the distribution of classifications
 with the coordinates of genic regions in the merged gff-to-blocks file.
 
+**Input**
+- Blocks_request file
+- Blocks_profiles file
+- ID file
+
 ### pVal_gff_overlap.py - KDE overlap by genes
 
 Calculate a measure of distribution overlap across genes in merged gff file. Distribution overlap is calculated
 as the sum of proportional differences in assignment to reference distributions. Overlap is measured using 
 reference samples only. 
+
+**Input**
+- Blocks_request file
+- ID file
 
 ### Complement - Galaxy_summary_tools.py
 

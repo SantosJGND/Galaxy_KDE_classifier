@@ -61,6 +61,7 @@ A savitsky golay filter is automatically applied if the flag '--coarse' is not p
 
 **Input**
 
+- ID file
 - Blocks_request file
 
 **Output**
