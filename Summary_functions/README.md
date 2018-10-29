@@ -9,8 +9,8 @@ were extracted at each window and stored in matrices *Blocks_Request* and *Block
 The generation of ideograms allows an initial, visual exploration of this output (1). This repository 
 provides tools for a quantitative exploration of this data.
 
-- *1* We performed an analysis of Core Asian rice variation (3K RG, Alexandrov *et al*. 2014). A classification
-of that data was performed. Core Ideograms were stored on another repository: [Core Ideograms](https://imgur.com/a/lpD0r31).
+- **1** We performed an analysis of Core Asian rice variation (3K RG, Alexandrov *et al*. 2014). A classification
+of that data was performed. Core Ideograms were stored in another repository: [Core Ideograms](https://imgur.com/a/lpD0r31).
 
 ### gff_Blocksmerge.py - combining information 
 

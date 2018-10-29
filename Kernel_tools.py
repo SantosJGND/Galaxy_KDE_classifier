@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Wed Oct 18 22:59:24 2017
-
-@author: jgarcia
-"""
 
 """
 Created on Sun Mar 05 13:01:08 2017
