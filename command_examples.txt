@@ -1,3 +1,28 @@
+## Argument Index.
+
+--CHR: Indicate which chromosome is being analysed. Most scripts will assume all chromosomes if not given.
+--geno: .geno file (see https://rdrr.io/bioc/LEA/man/geno.html).
+--fam: plink format .fam file (see https://www.cog-genomics.org/plink2/formats#fam).
+--bim: plink format .bim file (https://www.cog-genomics.org/plink2/formats#bim).
+--proc: parallel processing. number of processors. defaults to one. 
+
+--ref: Table. columns: {IDs; Group label}. colnames= False. tab delimited.
+--admx: Table. columns: {IDs; Group label}. colnames= False. tab delimited.
+--focus: Table. column: {IDs}. colnames= False.
+
+--threshold: comparison threshold for unique classification.
+--outlier: lower p-value threshold for outlier classification.
+
+--coarse: disable savgol smoothing.
+--bin: bin for savgol filter. 
+--height: ideogram height in inches.
+--width: ideogram width in inches.
+
+
+--reduc: (target analysis): Reduce data through PCA (performs PCA followed by proportional sampling from Kmeans groups).
+--app: output working dash app.
+
+
 ## test run Kernel classification
 
 qsub -N FM36 -V -q bigmem.q -pe parallel_smp 10 -l mem_free=20G -b y python -u Kernel_mPLib3D_FM36_Galaxy.py \
@@ -10,14 +35,13 @@ qsub -N FM36 -V -q bigmem.q -pe parallel_smp 10 -l mem_free=20G -b y python -u K
 --proc 10
 
 ## test run Ideogram plot:
-### focusing on the circumBasmati (focus file)
+### focusing on the GroupI (focus file)
 qsub -N ideo_1 -q normal.q -V -b yes python -u Ideogram_plots_Galaxy.py \
 /work/jgarcia/PO_lunch/Blocks_Request_st3_CHR06.txt \
---focus /work/jgarcia/PO_lunch/cBasmati_names.txt \
+--focus /work/jgarcia/PO_lunch/GroupI_names.txt \
 --CHR 6 \
 --height 5 \
 --width 13 \
---bin 15 \
 --threshold 2 \
 --outlier 0.0001 \
 --coarse
@@ -74,7 +98,7 @@ qsub -N Intermediate -q normal.q -l mem_free=30G -V -b yes python -u Intermediat
 /work/jgarcia/PO_lunch/Blocks_profiles_st3_CHR12.txt \
 --focus /work/jgarcia/PO_lunch/cBasmati_names.txt \
 --target 5,6,7,8 \
---id Intermediate_cBas \
+--id Intermediate_GroupI \
 --height 140 --width 18 \
 --bin 5 --threshold 2 \
 

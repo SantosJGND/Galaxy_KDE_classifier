@@ -70,7 +70,7 @@ A savitsky golay filter is automatically applied if the flag '--coarse' is not p
 
 ## Summary Analysis - /Summary_functions
 
-Ideograms provide a visual summary of reference KDE assingments across local data sets. This repository provides tools for 
+Ideograms provide a visual summary of reference KDE assignments across local data sets. This repository provides tools for 
 a quantitative analysis of local KDE estimates.
 
 ## Downstream Analysis - /Downstream_functions
