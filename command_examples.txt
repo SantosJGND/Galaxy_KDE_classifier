@@ -18,8 +18,8 @@
 --height: ideogram height in inches.
 --width: ideogram width in inches.
 
-
---reduc: (target analysis): Reduce data through PCA (performs PCA followed by proportional sampling from Kmeans groups).
+--random (target_analysis): integer. Sample size. sampling is performed across labels. 
+--reduc (target analysis): Reduce data through PCA (performs PCA followed by proportional sampling from Kmeans groups).
 --app: output working dash app.
 
 
