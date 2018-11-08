@@ -68,6 +68,9 @@ A savitsky golay filter is automatically applied if the flag '--coarse' is not p
 
 - Ideogram plots (.png)
 
+Example:
+[Ideogram cut](Fig_4.png)
+
 ## Summary Analysis - /Summary_functions
 
 Ideograms provide a visual summary of reference KDE assignments across local data sets. This repository provides tools for 
