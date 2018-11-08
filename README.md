@@ -68,7 +68,7 @@ A savitsky golay filter is automatically applied if the flag '--coarse' is not p
 
 - Ideogram plots (.png)
 
-Example figure: [Ideogram cut](Fig_4.png, see [Summary Analysis]() section)
+Example figure: [Ideogram cut](Fig_4.png), see [Summary Analysis](https://github.com/SantosJGND/Galaxy_KDE_classifier/tree/master/Summary_functions) section
 
 
 ## Summary Analysis - /Summary_functions
