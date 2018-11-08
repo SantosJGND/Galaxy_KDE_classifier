@@ -30,11 +30,11 @@ can become messy.
 
 **Input**
 
-- *.geno file*: genotype file, bi-allelic markers. Columns = Inds; Lines = SNPs; Codes: {Reference hom: 0; Het: 1; Alternative Hom: 2}.
-- *.bim file*: SNP information file; plink format.
-- *.fam file*: Individual information file; plink format.
-- *ref file*: Individual to group file, tab delimited. lines: ID (present in .fam file); group code.
-- *admix file*: Individual to group file, tab delimited. lines: ID (present in .fam file); group code.
+- *[.geno](https://github.com/SantosJGND/Galaxy_KDE_classifier/blob/master/Simulation_related/test_.05_.2/test.geno) file*: genotype file, bi-allelic markers. Columns = Inds; Lines = SNPs; Codes: {Reference hom: 0; Het: 1; Alternative Hom: 2}.
+- *[.bim](https://github.com/SantosJGND/Galaxy_KDE_classifier/blob/master/Simulation_related/test_.05_.2/test.bim) file*: SNP information file; plink format.
+- *[.fam](https://github.com/SantosJGND/Galaxy_KDE_classifier/blob/master/Simulation_related/test_.05_.2/test.fam) file*: Individual information file; plink format.
+- *[ref](https://github.com/SantosJGND/Galaxy_KDE_classifier/blob/master/Simulation_related/refs_sim.txt) file*: Individual to group file, tab delimited. lines: ID (present in .fam file); group code.
+- *[admix](https://github.com/SantosJGND/Galaxy_KDE_classifier/blob/master/Simulation_related/admx_sim.txt) file*: Individual to group file, tab delimited. lines: ID (present in .fam file); group code.
 
 **Output**
 
@@ -43,8 +43,8 @@ can become messy.
 
 **Example files**
 
-- Simulations: see /Simulation_related/test_.05_.2
-- Command line: see Command_examples.txt
+- Simulations: see [/Simulation_related/test_.05_.2](Galaxy_KDE_classifier/Simulation_related/test_.05_.2/Ideo_sample32_CHR01_Z1.6_bin9.png)
+- Command line: see [Command_examples.txt](Command_examples.txt)
 
 ### Ideogram plotting -- script: Ideogram_plots_Galaxy.py
 
@@ -61,15 +61,15 @@ A savitsky golay filter is automatically applied if the flag '--coarse' is not p
 
 **Input**
 
-- ID file
+- [ID](https://github.com/SantosJGND/Galaxy_KDE_classifier/blob/master/Simulation_related/Focus_IDs.txt) file
 - Blocks_request file
 
 **Output**
 
 - Ideogram plots (.png)
 
-Example:
-[Ideogram cut](Fig_4.png)
+Example figure: [Ideogram cut](Fig_4.png, see [Summary Analysis]() section)
+
 
 ## Summary Analysis - /Summary_functions
 
