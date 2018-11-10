@@ -71,6 +71,20 @@ A savitsky golay filter is automatically applied if the flag '--coarse' is not p
 Example figure: [Ideogram cut](Fig_4.png), see [Summary Analysis](https://github.com/SantosJGND/Galaxy_KDE_classifier/tree/master/Summary_functions) section
 
 
+## Galaxy integration
+
+The two scripts described above have been integrated to the Galaxy platform ([Giardine *et al*. 2005](https://genome.cshlp.org/content/15/10/1451.short)). 
+The portal provides an accessible interface to deploy various bioinformatics tools while ensuring reproducibility. Under the header *KDE_classifier*, an instance 
+was developed for the deployment of a reference based classification of consecutive genomic window using KDE and its subsequent analysis in the form of ideograms.
+
+The scripts for classification and plotting are available as separate tools:
+
+- [KDE](http://galaxy.southgreen.fr/galaxy/root?tool_id=KDE1) 
+- [Ideograms](http://galaxy.southgreen.fr/galaxy/root?tool_id=Ideogram)
+
+In each case the parameters of the script are accessible and defaults are provided. 
+Through Galaxy, these tools can be combined into a [workflow of analysis](http://galaxy.southgreen.fr/galaxy/u/acomte/p/reconstruction-of-mosaic-genomes) to facilitate reproduction.
+
 ## Summary Analysis - /Summary_functions
 
 Ideograms provide a visual summary of reference KDE assignments across local data sets. This repository provides tools for 
@@ -86,6 +100,8 @@ provides tools to complement supervised information with targeted measures of lo
 - Comaniciu D and Meer P. 2002. Mean shift: A robust approach toward feature space analysis. IEEE Trans Patt Mach Int 24: 603-619.
 
 - Fuller DQ, Sato YI, Castillo C, Qin L, Weisskopf AR, Kingwell-Banham EJ, Song J, Ahn SM and Van Etten, J. 2010. Consilience of genetics and archaeobotany in the entangled history of rice. Archae and Anthro Sci 2: 115-131.
+
+- Giardine B, Riemer C, Hardison RC, Burhans R, Elnitski L, Shah P, Zhang Y, Blankenberg D, Albert I, Taylor J and Miller W. 2005. Galaxy: a platform for interactive large-scale genome analysis. Genome research, 15: 1451-1455.
 
 ## Supplementary Material
 
