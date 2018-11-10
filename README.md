@@ -74,7 +74,7 @@ Example figure: [Ideogram cut](Fig_4.png), see [Summary Analysis](https://github
 ## Galaxy integration
 
 The two scripts described above have been integrated to the Galaxy platform ([Giardine *et al*. 2005](https://genome.cshlp.org/content/15/10/1451.short)). 
-The portal provides an accessible interface to deploy various bioinformatics tools while ensuring reproducibility. Under the header *KDE_classifier*, an instance 
+The [portal](http://galaxy.southgreen.fr/galaxy/) provides an accessible interface to deploy various bioinformatics tools while ensuring reproducibility. Under the header *KDE_classifier*, an instance 
 was developed for the deployment of a reference based classification of consecutive genomic window using KDE and its subsequent analysis in the form of ideograms.
 
 The scripts for classification and plotting are available as separate tools:
