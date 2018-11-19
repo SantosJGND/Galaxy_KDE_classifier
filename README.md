@@ -107,3 +107,6 @@ provides tools to complement supervised information with targeted measures of lo
 
 A series of [jupyter notebooks](https://github.com/SantosJGND/Genetic-data-analysis) was created in accompaniment to the development of this
 pipeline.
+
+
+[![DOI](https://zenodo.org/badge/154482887.svg)](https://zenodo.org/badge/latestdoi/154482887)
