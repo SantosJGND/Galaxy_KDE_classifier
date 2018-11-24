@@ -60,11 +60,14 @@ reference samples only.
 
 Summary output, accompanied of jupyter notebooks or, in the case of `Intermediate_labels_Exp.py` analysis, dash application.
 
-- **/Summary_classification**: Group and individual classification summaries.
+- **/Summary_classification**: Group and individual classification summaries. jupyter interface: 
+[classification notebook](https://nbviewer.jupyter.org/github/SantosJGND/Galaxy_KDE_classifier/blob/master/Summary_functions/Summary_output_examples/Summary_classification/Summary_exploration.ipynb).
 
-- **/Intermediate**: Genome-wide density of selected classifications across group of interest.
+- **/Intermediate**: Genome-wide density of selected classifications across group of interest. Compound, application output: 
+[Intermediate notebook](https://intermediate-browser.herokuapp.com/).
 
-- **/Overlap_gff**: Distribution overlap measure at regions of interest.
+- **/Overlap_gff**: Distribution overlap measure at regions of interest. Compound, jupyter interface: 
+[Overlap jupyter](https://nbviewer.jupyter.org/github/SantosJGND/Galaxy_KDE_classifier/blob/master/Summary_functions/Summary_output_examples/Overlap_gff/P_value_overlap.ipynb)
 
 
 ## References

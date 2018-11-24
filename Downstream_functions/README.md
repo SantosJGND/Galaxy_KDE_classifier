@@ -42,4 +42,3 @@ Example queries of targeted analysis. Free Heroku servers will quickly get crowd
 
 - Individual specific association to target references: [App_ind](https://iris-313-12074.herokuapp.com/)
 
-
