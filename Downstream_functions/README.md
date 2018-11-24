@@ -30,3 +30,16 @@ Our supervised classification has served the purpose of simplifying our genomic 
 pinpoint contradictory signals along the genomes of particular accessions which would, in a genome-wide analysis, have resulted in intermediate 
 and even outlier positions. Separate analyses of cleaner groups of signals can inform us on the structure of a given group in more depth.
 
+**Examples**
+
+Example queries of targeted analysis. Free Heroku servers will quickly get crowded and are likely to lag.
+
+- Genome-wide association to a target reference: [App_global](https://cbasmati-japonica-signals.herokuapp.com/)
+
+- Chromosome specific association to target references with regional focus: [App_regional](https://cbasmati-chr08-examples.herokuapp.com/)
+
+- Gene specific association to target references: [App_gene](https://sh4-gene.herokuapp.com/)
+
+- Individual specific association to target references: [App_ind](https://iris-313-12074.herokuapp.com/)
+
+
