@@ -71,7 +71,6 @@ admx_lib.update(refs_lib)
 Geneo = admx_lib
 
 CHR = args.CHR
-BIN = args.bin
 
 Home = args.out
 
