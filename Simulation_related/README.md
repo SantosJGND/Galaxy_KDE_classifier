@@ -59,7 +59,5 @@ To run the kde classifier on this data, the following modules need to be install
 Run the KDE and Ideogram scripts from within the directory, using the 
 [example commands](https://github.com/SantosJGND/Galaxy_KDE_classifier/blob/master/Simulation_related/Commands_sim.txt).
 
-**Output** using commands provided: [Ideogram](https://github.com/SantosJGND/Galaxy_KDE_classifier/blob/master/Simulation_related/test_.05_.2/Ideo_sample32_CHR01_Z1.6_bin9.png)
-
-
+**Output** using commands provided: [Ideogram](https://github.com/SantosJGND/Galaxy_KDE_classifier/blob/master/Simulation_related/test_.05_.2/Ideo_sample32_CHR01_Z1.6_bin9_display.png)
 
