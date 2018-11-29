@@ -6,19 +6,18 @@ Application of local KDE classification of referfence and admixed simulated geno
 
 The R package `ms` was used to simulate three populations coalescing along the follwing scheme:
 
-
-         |                   
-         |                   
-         |                   
-        / \        <--- 0.2  
-       /   \                 
-      /     \                
-     /       \               
-    /\ <- - - \ - - - - 0.15  
-   /  \        \             
-  /    \        \            
- P1    P2       P3           
-                =X           
+            |                   
+            |                   
+            |                   
+           / \        <--- 0.2  
+          /   \                 
+         /     \                
+        /       \               
+       /\ <- - - \ ------- 0.15 
+      /  \        \             
+     /    \        \            
+    P1    P2       P3           
+                   =X           
 
 
 
@@ -31,14 +30,10 @@ An in-house script was used to generate three admixed populations as defined
 by their admixture proportions:
 
 
-    P1 P2 P3
-    
-A1: 300 0   300
-
-A2: 400 200 0
-
-A3: 200 200 200
-
+         P1  P2  P3
+    A1: 300 0   300
+    A2: 400 200 0
+    A3: 200 200 200
 
 
 Admixed populations were allowed 17 generations of random crossing followed
@@ -54,13 +49,13 @@ To run the kde classifier on this data, the following modules need to be install
 
 
 - R: version 3.4.3
-- python: version 3.4.3
-- plink: version 1.90b3v
+-python: version 3.4.3
+-plink: version 1.90b3v
 - sNMF_CL: version 1.2
 
 
 Run the KDE and Ideogram scripts from within the directory, using the 
-[example commands] (https://github.com/SantosJGND/Galaxy_KDE_classifier/blob/master/Simulation_related/Commands_sim.txt).
+(example commands)[https://github.com/SantosJGND/Galaxy_KDE_classifier/blob/master/Simulation_related/Commands_sim.txt].
 
 
 
