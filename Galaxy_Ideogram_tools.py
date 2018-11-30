@@ -60,7 +60,7 @@ def read_3D_profiles(File_list):
 ### KDE-based classification across windows. 
 
 
-def Merge_class(Ref_profiles,focus_indicies,Out,Diff_threshold,BIN,X_threshold):
+def Merge_class(Ref_profiles,focus_indicies,Out,Diff_threshold,BIN,X_threshold,coarse,sg_order):
     '''
     Receives dictionary of reference p-values by individual by window and chromosome.
     Return dictionary of individual classifications according to the parameters provided.
@@ -89,10 +89,10 @@ def Merge_class(Ref_profiles,focus_indicies,Out,Diff_threshold,BIN,X_threshold):
             
             Test = [int(x <= X_threshold) for x in np.amax(np.array(Guys),axis = 0)]     
             
-            if args.coarse:
+            if coarse:
                 
-                Guys = [savgol_filter(x,BIN,args.sg_order,mode = "nearest") for x in Guys]
-                Test = savgol_filter(Test,BIN,args.sg_order,mode = "nearest")
+                Guys = [savgol_filter(x,BIN,sg_order,mode = "nearest") for x in Guys]
+                Test = savgol_filter(Test,BIN,sg_order,mode = "nearest")
                 Test = [round(x) for x in Test]
             
             #

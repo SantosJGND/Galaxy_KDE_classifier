@@ -123,7 +123,7 @@ focus_indexes = [Names.index(x) for x in Focus]
 if args.coarse:
     print('statistics will be smoothed, using a savgol filter of order {0} and a bin size of {1}'.format(args.sg_order,args.bin))
 
-Blocks = Merge_class(Ref_profiles,focus_indexes,Out,args.threshold,args.bin,args.outlier)
+Blocks = Merge_class(Ref_profiles,focus_indexes,Out,args.threshold,args.bin,args.outlier,args.coarse,args.sg_order)
 
 print("Number chromosomes selected: {0}".format(len(Blocks)))
 ####
