@@ -1,6 +1,6 @@
 ## Simulation test
 
-Application of local KDE classification of reference and admixed simulated genotypes.
+Local KDE classification of reference and admixed simulated genotypes.
 
 ### Evolutionary tree:
 

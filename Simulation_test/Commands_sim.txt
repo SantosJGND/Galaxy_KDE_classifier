@@ -6,13 +6,6 @@ module load bioinfo/plink/1.90b3v
 module load bioinfo/sNMF_CL/1.2
 
 
-##### launch simulation command
-qsub -N sim -V -q normal.q -b y Rscript --vanilla simulation_special_blend_js.R \
--f .05 \
--s .2 \
--o test_.05_.2
-
-
 ## Convert Files
 vcf2geno test_.05_.2/test.vcf test_.05_.2/test.geno   
 
