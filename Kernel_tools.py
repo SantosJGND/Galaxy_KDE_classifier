@@ -6,7 +6,6 @@ Created on Sun Mar 05 13:01:08 2017
 @author: jgarcia
 """
 
-import collections
 
 import itertools as it
 
@@ -29,6 +28,7 @@ from scipy import stats
 from scipy.signal import savgol_filter
 
 from random import randint
+import collections
 
 def recursively_default_dict():
         return collections.defaultdict(recursively_default_dict)

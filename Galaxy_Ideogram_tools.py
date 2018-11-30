@@ -4,6 +4,13 @@ import itertools as it
 import numpy as np
 import re
 
+import collections
+
+def recursively_default_dict():
+        return collections.defaultdict(recursively_default_dict)
+
+from matplotlib.collections import BrokenBarHCollection
+
 ## created 28-10-2018
 ## SantosJGND
 
