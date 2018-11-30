@@ -5,7 +5,6 @@ module load system/python/3.4.3
 module load bioinfo/plink/1.90b3v
 module load bioinfo/sNMF_CL/1.2
 
-
 ## Convert Files
 vcf2geno test_.05_.2/test.vcf test_.05_.2/test.geno   
 
