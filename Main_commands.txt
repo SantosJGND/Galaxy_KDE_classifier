@@ -1,0 +1,57 @@
+## Argument Index.
+
+--CHR: Indicate which chromosome is being analysed. Most scripts will assume all chromosomes if not given.
+--geno: .geno file (see https://rdrr.io/bioc/LEA/man/geno.html).
+--fam: plink format .fam file (see https://www.cog-genomics.org/plink2/formats#fam).
+--bim: plink format .bim file (https://www.cog-genomics.org/plink2/formats#bim).
+--proc: parallel processing. number of processors. defaults to one. 
+
+--ref: Table. columns: {IDs; Group label}. colnames= False. tab delimited.
+--admx: Table. columns: {IDs; Group label}. colnames= False. tab delimited.
+--focus: Table. column: {IDs}. colnames= False.
+
+--threshold: comparison threshold for unique classification.
+--outlier: lower p-value threshold for outlier classification.
+
+--coarse: disable savgol smoothing.
+--bin: bin for savgol filter. 
+--height: ideogram height in inches.
+--width: ideogram width in inches.
+
+--random (target_analysis): integer. Sample size. sampling is performed across labels. 
+--reduc (target analysis): Reduce data through PCA (performs PCA followed by proportional sampling from Kmeans groups).
+--app: output working dash app.
+
+
+## test run Kernel classification
+
+qsub -N FM36 -V -q bigmem.q -pe parallel_smp 10 -l mem_free=20G -b y python -u Kernel_mPLib3D_FM36_Galaxy.py \
+--CHR 2 \
+--geno /gs7k1/home/jgarcia/olde_home/FILTER_GENO/SplitGENO/GENO_chr02.geno \
+--fam /gs7k1/home/jgarcia/olde_home/FILTER_GENO/F3G/NG_001.fam \
+--bim /gs7k1/home/jgarcia/olde_home/FILTER_GENO/F3G/NG_001.bim \
+--ref /gs7k1/home/jgarcia/PO_Core/refs_CORE.txt \
+--admx /gs7k1/home/jgarcia/PO_Core/admx_CORE.txt \
+--proc 10
+
+## test run Ideogram plot:
+### focusing on the GroupI (focus file)
+qsub -N ideo_1 -q normal.q -V -b yes python -u Ideogram_plots_Galaxy.py \
+/work/jgarcia/PO_lunch/Blocks_Request_st3_CHR06.txt \
+--focus /work/jgarcia/PO_lunch/GroupI_names.txt \
+--CHR 6 \
+--height 5 \
+--width 13 \
+--threshold 2 \
+--outlier 0.0001 \
+--coarse
+
+### not focusing (plots all inds if --focus not given)
+qsub -N ideo_12 -q normal.q -V -b yes python -u Ideogram_plots_Galaxy.py \
+/work/jgarcia/PO_lunch/COMP/Blocks_Request_st1_CHR12.txt \
+--CHR 12 \
+--height 100 \
+--width 18 \
+--bin 10 \
+--threshold 2
+
