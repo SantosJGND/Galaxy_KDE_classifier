@@ -1,3 +1,9 @@
+import collections
+import time
+import itertools as it
+import numpy as np
+import re
+
 ## created 28-10-2018
 ## SantosJGND
 
