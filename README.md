@@ -33,8 +33,8 @@ can become messy.
 - *[.geno](https://github.com/SantosJGND/Galaxy_KDE_classifier/blob/master/Simulation_related/test_.05_.2/test.geno) file*: genotype file, bi-allelic markers. Columns = Inds; Lines = SNPs; Codes: {Reference hom: 0; Het: 1; Alternative Hom: 2}.
 - *[.bim](https://github.com/SantosJGND/Galaxy_KDE_classifier/blob/master/Simulation_related/test_.05_.2/test.bim) file*: SNP information file; plink format.
 - *[.fam](https://github.com/SantosJGND/Galaxy_KDE_classifier/blob/master/Simulation_related/test_.05_.2/test.fam) file*: Individual information file; plink format.
-- *[ref](https://github.com/SantosJGND/Galaxy_KDE_classifier/blob/master/Simulation_related/refs_sim.txt) file*: Individual to group file, tab delimited. lines: ID (present in .fam file); group code.
-- *[admix](https://github.com/SantosJGND/Galaxy_KDE_classifier/blob/master/Simulation_related/admx_sim.txt) file*: Individual to group file, tab delimited. lines: ID (present in .fam file); group code.
+- *[ref](https://github.com/SantosJGND/Galaxy_KDE_classifier/blob/master/Simulation_related/refs_sim.txt) file*: Individual to group file, tab delimited. lines: group code; ID (present in .fam file).
+- *[admix](https://github.com/SantosJGND/Galaxy_KDE_classifier/blob/master/Simulation_related/admx_sim.txt) file*: Individual to group file, tab delimited. lines: group code; ID (present in .fam file).
 
 **Output**
 
