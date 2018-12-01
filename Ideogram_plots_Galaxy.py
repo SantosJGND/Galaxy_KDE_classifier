@@ -123,7 +123,7 @@ focus_indexes = [Names.index(x) for x in Focus]
 if args.coarse:
     print('statistics will be smoothed, using a savgol filter of order {0} and a bin size of {1}'.format(args.sg_order,args.bin))
 
-Blocks = Merge_class(Ref_profiles,focus_indexes,Out,args.threshold,args.bin,args.outlier,args.coarse,args.sg_order)
+Blocks, N_pops = Merge_class(Ref_profiles,focus_indexes,Out,args.threshold,args.bin,args.outlier,args.coarse,args.sg_order)
 
 print("Number chromosomes selected: {0}".format(len(Blocks)))
 ####
@@ -146,6 +146,15 @@ if args.end:
         print("end was selected with no CHR specification.")
 
 
+#################### define color refs:
+color_ref= ['red','yellow','blue','black','orange','purple','green','silver','red3','deepskyeblue','navy','chartreuse','darkorchid3','goldenrod2']
+
+prim_colors= ['red','yellow','blue']
+
+if N_pops <= 3:
+    step= prim_colors[:N_pops]
+    step.extend(color_ref[3:])
+    color_ref= step
 
 
 #################### PROCEED
@@ -159,8 +168,6 @@ for here in range(len(Focus)):
     Subject = Focus[here]
     
     chromosome_list.extend(['chr'+str(Chr)+ '_' + Subject for Chr in chromosomes])
-    
-    color_ref= ['red','yellow','blue','black','orange','purple','green','silver','red3','deepskyeblue','navy','chartreuse','darkorchid3','goldenrod2']
     Stock = [[['chr'+str(Chr)+ '_' + Subject,bl,Out[Chr][bl],color_ref[Blocks[Chr][bl][here] - 1]] for bl in sorted(Blocks[Chr].keys())] for Chr in chromosomes]
     Stock = [y for y in it.chain(*[z for z in it.chain(*[Stock])])]
     

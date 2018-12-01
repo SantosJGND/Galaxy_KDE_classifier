@@ -32,7 +32,7 @@ parser.add_argument("--MSprint",action= "store_true",help = "if given prints clu
 ###
 parser.add_argument("--VARprint",action= "store_true",help = "if given prints PC explained variance per window. If PCA is not chosen just prints out 0's")
 ###
-parser.add_argument("--id",type= str,default= '2',help = "Give your analysis an ID. default is set to integer 2")
+parser.add_argument("--id",type= str,default= '1',help = "Give your analysis an ID. default is set to integer 2")
 ###
 parser.add_argument("-w",type = int,default = 200, help = "Window size - markers")
 ### 

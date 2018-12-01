@@ -140,7 +140,7 @@ def Merge_class(Ref_profiles,focus_indicies,Out,Diff_threshold,BIN,X_threshold,c
         
         Blocks_genome.update(Clove)
     
-    return Blocks_genome
+    return Blocks_genome, N_pops
 
 
 #############################

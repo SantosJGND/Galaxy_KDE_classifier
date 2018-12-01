@@ -23,8 +23,8 @@ qsub -N FM36 -V -q normal.q -pe parallel_smp 2 -l mem_free=20G \
 --ref refs_sim.txt \
 --admx admx_sim.txt \
 --out test_.05_.2 \
--w 100 \
---overlap 50 \
+-w 20 \
+--overlap 15 \
 --proc 5 \
 --dr PCA \
 --MSprint
