@@ -225,7 +225,7 @@ color_lookup = {
 }
 
 # Add a new column for colors
-ideo = compress_ideo(ideo,chromosome_list)
+ideo = compress_ideo(ideo,chromosome_list, Out)
 
 ideo['colors'] = ideo['gieStain'].apply(lambda x: tuple([round(y / float(255),1) for y in color_lookup[x]]))
 # Add a new column for width

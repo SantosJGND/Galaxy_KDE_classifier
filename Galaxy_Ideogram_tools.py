@@ -3,6 +3,7 @@ import time
 import itertools as it
 import numpy as np
 import re
+import pandas as pd
 
 import collections
 
@@ -181,7 +182,7 @@ def chromosome_collections(df, y_positions, height,  **kwargs):
         del df['width']
 
 
-def compress_ideo(df,chromosome_list):
+def compress_ideo(df,chromosome_list, Out):
     '''
     Merge neighboring windows of the same class individual-wise. Returns pandas df.
     '''
