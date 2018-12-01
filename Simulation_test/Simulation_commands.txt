@@ -43,4 +43,3 @@ test_.05_.2/Blocks_Request_st1_CHR01.txt \
 --out test_.05_.2/ \
 --outlier 0.0005 \
 --coarse
-
