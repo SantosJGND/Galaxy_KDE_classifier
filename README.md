@@ -30,11 +30,11 @@ can become messy.
 
 **Input**
 
-- *[.geno](https://github.com/SantosJGND/Galaxy_KDE_classifier/blob/master/Simulation_related/test_.05_.2/test.geno) file*: genotype file, bi-allelic markers. Columns = Inds; Lines = SNPs; Codes: {Reference hom: 0; Het: 1; Alternative Hom: 2}.
-- *[.bim](https://github.com/SantosJGND/Galaxy_KDE_classifier/blob/master/Simulation_related/test_.05_.2/test.bim) file*: SNP information file; plink format.
-- *[.fam](https://github.com/SantosJGND/Galaxy_KDE_classifier/blob/master/Simulation_related/test_.05_.2/test.fam) file*: Individual information file; plink format.
-- *[ref](https://github.com/SantosJGND/Galaxy_KDE_classifier/blob/master/Simulation_related/refs_sim.txt) file*: Individual to group file, tab delimited. lines: group code; ID (present in .fam file).
-- *[admix](https://github.com/SantosJGND/Galaxy_KDE_classifier/blob/master/Simulation_related/admx_sim.txt) file*: Individual to group file, tab delimited. lines: group code; ID (present in .fam file).
+- *[.geno](https://github.com/SantosJGND/Galaxy_KDE_classifier/blob/master/Simulation_test/test_.05_.2/test.geno) file*: genotype file, bi-allelic markers. Columns = Inds; Lines = SNPs; Codes: {Reference hom: 0; Het: 1; Alternative Hom: 2}.
+- *[.bim](https://github.com/SantosJGND/Galaxy_KDE_classifier/blob/master/Simulation_test/test_.05_.2/test.bim) file*: SNP information file; plink format.
+- *[.fam](https://github.com/SantosJGND/Galaxy_KDE_classifier/blob/master/Simulation_test/test_.05_.2/test.fam) file*: Individual information file; plink format.
+- *[ref](https://github.com/SantosJGND/Galaxy_KDE_classifier/blob/master/Simulation_test/refs_sim.txt) file*: Individual to group file, tab delimited. lines: group code; ID (present in .fam file).
+- *[admix](https://github.com/SantosJGND/Galaxy_KDE_classifier/blob/master/Simulation_test/admx_sim.txt) file*: Individual to group file, tab delimited. lines: group code; ID (present in .fam file).
 
 **Output**
 
@@ -43,7 +43,7 @@ can become messy.
 
 **Example files**
 
-- Simulations: see [/Simulation_related/test_.05_.2](Galaxy_KDE_classifier/Simulation_related/test_.05_.2/Ideo_sample32_CHR01_Z1.6_bin9.png)
+- Simulations: see [/Simulation_related/test_.05_.2](https://github.com/SantosJGND/Galaxy_KDE_classifier/blob/master/Simulation_test/test_.05_.2/Ideo_sample32_CHR01_st1041_Z3.0_bin5_display.png)
 - Command line: see [Command_examples.txt](Command_examples.txt)
 
 ### Ideogram plotting -- script: Ideogram_plots_Galaxy.py
@@ -61,7 +61,7 @@ A savitsky golay filter is automatically applied if the flag '--coarse' is not p
 
 **Input**
 
-- [ID](https://github.com/SantosJGND/Galaxy_KDE_classifier/blob/master/Simulation_related/Focus_IDs.txt) file
+- [ID](https://github.com/SantosJGND/Galaxy_KDE_classifier/blob/master/Simulation_test/Focus_IDs.txt) file
 - Blocks_request file
 
 **Output**
@@ -100,8 +100,6 @@ provides tools to complement supervised information with targeted measures of lo
 - Comaniciu D and Meer P. 2002. Mean shift: A robust approach toward feature space analysis. IEEE Trans Patt Mach Int 24: 603-619.
 
 - Giardine B, Riemer C, Hardison RC, Burhans R, Elnitski L, Shah P, Zhang Y, Blankenberg D, Albert I, Taylor J and Miller W. 2005. Galaxy: a platform for interactive large-scale genome analysis. Genome research, 15: 1451-1455.
-
-- Fuller DQ, Sato YI, Castillo C, Qin L, Weisskopf AR, Kingwell-Banham EJ, Song J, Ahn SM and Van Etten, J. 2010. Consilience of genetics and archaeobotany in the entangled history of rice. Archae and Anthro Sci 2: 115-131.
 
 ## Supplementary Material
 

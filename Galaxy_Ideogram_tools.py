@@ -91,6 +91,7 @@ def Merge_class(Ref_profiles,focus_indicies,Out,Diff_threshold,BIN,X_threshold,c
             Test = [int(x <= X_threshold) for x in np.amax(np.array(Guys),axis = 0)]     
             
             if coarse:
+                from scipy.signal import savgol_filter
                 
                 Guys = [savgol_filter(x,BIN,sg_order,mode = "nearest") for x in Guys]
                 Test = savgol_filter(Test,BIN,sg_order,mode = "nearest")

@@ -10,6 +10,7 @@ from Kernel_tools import *
 from Galaxy_Ideogram_tools import *
 
 import os
+import time
 import argparse
 parser = argparse.ArgumentParser()
 
@@ -59,6 +60,7 @@ parser.add_argument('--xticks',type= int,default= 100000,help= 'xticks on final 
 
 args = parser.parse_args()
 
+s0 = time.time()
 
 Home= args.out
 
@@ -275,3 +277,8 @@ if args.id:
 plt.savefig(Home + 'Ideo_' + Subject +'_CHR' + str(chromosomes[-1]).zfill(2)+'_st' + str(min(ideo.start)) + '_Z' +str(args.threshold)+ '_bin'+ str(args.bin)+'.png',bbox_inches = 'tight')
 
 print('Done.')
+
+s1= time.time()
+
+print('total: ' + str(s1-s0) + ' seconds elapsed.')
+print('total: ' + str((s1-s0) / float(60)) + ' minutes elapsed.')
