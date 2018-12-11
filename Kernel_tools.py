@@ -65,17 +65,21 @@ def read_refs(index_file,Fam_lib):
     ref file indexes individuals to population code.
     '''
     indxs = recursively_default_dict()
+    Absent= []
     
     Input = open(index_file,'r')
     for line in Input:
         line = line.split()
+        if line[1] not in Fam_lib.keys():
+            Absent.append(line[1])
+            continue
         indxs[int(line[0])][Fam_lib[line[1]]] = []
     
     Input.close()
     
     indxs = {gop:[x for x in indxs[gop].keys()] for gop in indxs.keys()}
     
-    return indxs, [x for x in sorted(indxs.keys())]
+    return indxs, [x for x in sorted(indxs.keys())], Absent
 
 
 

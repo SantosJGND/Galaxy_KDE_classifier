@@ -62,9 +62,26 @@ MissG, Gindex = BIMread(args.bim)
 
 GenoSUF = args.geno
 
-#### read admix and reference ind files.
-admx_lib, Crossed = read_refs(args.admx,Fam)
-refs_lib, Parents = read_refs(args.ref,Fam)
+#### read admix ind files.
+admx_lib, Crossed, absent_admx = read_refs(args.admx,Fam)
+
+if absent_admx:
+    print(",".join([str(x) for x in absent_admx]) + ' absent from provided admx.')
+
+if len(absent_admx) > (0.5 * len(Crossed)):
+    print('over half the admx missing. Aborting run.')
+    break
+
+#### read reference ind files.
+refs_lib, Parents, absent_refs  = read_refs(args.ref,Fam)
+
+if absent_refs:
+    print(",".join([str(x) for x in absent_refs]) + ' absent from provided refs.')
+
+if len(absent_admx) > (0.5 * len(Crossed)):
+    print('over half the references missing. Aborting run.')
+    break
+
 
 admx_lib.update(refs_lib)
 
