@@ -1,4 +1,14 @@
 
+import os
+import argparse
+
+import collections
+import time
+import itertools as it
+import numpy as np
+import re
+import pandas as pd
+
 ##########################################
 ########## Load data.
 
@@ -45,8 +55,30 @@ def read_books(books):
     
     library= pd.DataFrame(library,columns= ['file','tag','start','Chr'])
     return library
-        
+
+
+
+def read_geno_books(books):
+    '''
+    reads files. required pattern: _chr(i)
+    where i = chromosome number.
+    Tag will be string preceding underscore.
+    '''
+    library= []
     
+    for shelf in books:
+        card= shelf.split('/')
+        
+        cover= card[-1].split('_')
+        print(cover)
+        Chr= int([re.findall(r'\d+',i)[0] for i in cover if re.search('chr',i)][0])
+        print(Chr)
+        tag= cover[0]
+        
+        library.append([shelf,tag,Chr])
+    
+    library= pd.DataFrame(library,columns= ['file','tag','Chr'])
+    return library
 
 
 def read_3D_profiles(Books):
@@ -165,7 +197,7 @@ def read_3D_profiles_list(File_list):
 
 
 
-def Merge_class(Ref_profiles,focus_indicies,Out,Diff_threshold,BIN,X_threshold):
+def Merge_class(Ref_profiles,focus_indicies,Out,Diff_threshold,BIN,X_threshold,coarse,sg_order):
     Blocks_genome = recursively_default_dict()
     
     for CHR in Ref_profiles.keys():
@@ -190,10 +222,10 @@ def Merge_class(Ref_profiles,focus_indicies,Out,Diff_threshold,BIN,X_threshold):
             
             Test = [int(x <= X_threshold) for x in np.amax(np.array(Guys),axis = 0)]     
             
-            if args.coarse:
+            if coarse:
                 
-                Guys = [savgol_filter(x,BIN,args.sg_order,mode = "nearest") for x in Guys]
-                Test = savgol_filter(Test,BIN,args.sg_order,mode = "nearest")
+                Guys = [savgol_filter(x,BIN,sg_order,mode = "nearest") for x in Guys]
+                Test = savgol_filter(Test,BIN,sg_order,mode = "nearest")
                 Test = [round(x) for x in Test]
             
             #
@@ -247,7 +279,7 @@ def Merge_class(Ref_profiles,focus_indicies,Out,Diff_threshold,BIN,X_threshold):
 ######### Classification processing
 
 
-def compress_ideo(df,chromosome_list):
+def compress_ideo(df,Out,chromosome_list):
     '''
     Compress classification matrix by individual.
     

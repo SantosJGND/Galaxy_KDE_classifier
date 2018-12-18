@@ -70,7 +70,7 @@ if absent_admx:
 
 if len(absent_admx) > (0.5 * len(Crossed)):
     print('over half the admx missing. Aborting run.')
-    break
+    
 
 #### read reference ind files.
 refs_lib, Parents, absent_refs  = read_refs(args.ref,Fam)
@@ -80,7 +80,7 @@ if absent_refs:
 
 if len(absent_admx) > (0.5 * len(Crossed)):
     print('over half the references missing. Aborting run.')
-    break
+    
 
 
 admx_lib.update(refs_lib)

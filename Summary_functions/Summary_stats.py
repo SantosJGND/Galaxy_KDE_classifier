@@ -20,7 +20,7 @@ import re
 
 import pandas as pd
 
-import Galaxy_summary_tools
+import Galaxy_summary_tools as Gst
 
 parser = argparse.ArgumentParser()
 
@@ -66,6 +66,7 @@ parser.add_argument("--width",type= float,default= 20,help= "figure width, in in
 
 parser.add_argument('--xticks',type= int,default= 100000,help= 'xticks on final ideogram')
 
+
 args = parser.parse_args()
 
 
@@ -80,21 +81,21 @@ Home= args.out
 print('To begin reading from: ')
 print(args.books)
 
-Ref_profiles, Names, Out = read_3D_profiles_list(args.books)
+Ref_profiles, Names, Out = Gst.read_3D_profiles_list(args.books)
 
 Home= args.out
 
 ######
 
 if args.focus:
-    Focus = read_focus(args.focus)
+    Focus = Gst.read_focus(args.focus)
 else:
     Focus = Names
 
 focus_indexes= [x for x in range(len(Names)) if Names[x] in Focus]
 
 
-Blocks = Merge_class(Ref_profiles,focus_indexes,Out,args.threshold,args.bin,args.outlier)
+Blocks = Gst.Merge_class(Ref_profiles,focus_indexes,Out,args.threshold,args.bin,args.outlier,args.coarse,args.sg_order)
 
 print("Number of chromosomes selected for analysis: {0}".format(len(Blocks)))
 
@@ -157,7 +158,7 @@ color_lookup = {
 
 
 
-ideo = compress_ideo(ideo,chromosome_list)
+ideo = Gst.compress_ideo(ideo,Out,chromosome_list)
 
 #ideo = ideo[(ideo.start > 5.06e6) & (ideo.start < 7.06e6)]
 
