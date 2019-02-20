@@ -83,6 +83,19 @@ def read_refs(index_file,Fam_lib):
 
 
 
+def read_focus(index_file):
+    indxs = []
+    
+    Input = open(index_file,'r')
+    for line in Input:
+        line = line.split()
+        indxs.append(line[0])
+    
+    Input.close()
+    
+    return indxs
+
+
 
 def BIMread(bimFile):
     '''
@@ -129,49 +142,6 @@ def FAMread(Famfile):
         d += 1
     File.close()
     return Inds
-
-
-def Geneo_CORE(FAM,Identifiers):
-    '''
-    Specific to CORE excel file where accessions to be kept are marked out.
-    Returns dictionary of same structure as OriginbysNMF().
-    '''
-    Set = []
-    Fam = {x:v for v,x in FAM.items()}
-    IDs = open(Identifiers,'r')
-    for line in IDs:
-        line = line.split()
-        if line[1] == 'c':
-            Set.append(Fam[line[0]])
-    return Set
-
-
-def interpolate_nans(X):
-    """Overwrite NaNs with column value interpolations."""
-    col_means = np.array([int(np.nanmean(X[:,x])) for x in range(X.shape[1])])
-    inds = np.where(np.isnan(X))
-    X[inds] = np.take(col_means,inds[1])
-    return X
-
-
-
-def GenoQtoDict(Geno_Q):
-    """
-    Reads Q matrix output of sNMF analysis stores into dictionary.
-    """
-    GenoI = open(Geno_Q,"r")
-    IndAx = {}
-    Individual = 0
-    
-    for Id in GenoI:
-         IndAx[Individual] = recursively_default_dict()
-         Id = Id.split(" ")
-         Id = [float(x.strip("\n")) for x in Id]
-         for u in range(len(Id)):
-             IndAx[Individual][u + 1] = Id[u]
-         Individual += 1
-    GenoI.close()
-    return IndAx
 
 
 #################################################
@@ -232,6 +202,14 @@ def lognormalize(x):
     return np.exp(x - a)
 
 
+def interpolate_nans(X):
+    """Overwrite NaNs with column value interpolations."""
+    col_means = np.array([int(np.nanmean(X[:,x])) for x in range(X.shape[1])])
+    inds = np.where(np.isnan(X))
+    X[inds] = np.take(col_means,inds[1])
+    return X
+
+
 def Progress(snp,Inter,kmax,partition,window):
     '''
     simple function to print out remaining time estimates.
@@ -277,34 +255,6 @@ def readSIM_conf(Fconf):
 ##
 ##
 ##
-
-def read_NEWorder(OrderFile,Row):
-    """
-    Read slection file setup w/ JC.
-    """
-    Gps = []
-    Ofile = open(OrderFile,"r")
-    Row = Row-1
-    d = 0
-    for line in Ofile:
-        if d == 0:
-            d += 1
-            continue
-        line = line.split()
-        Gps.append(int(line[Row]))
-    Ofile.close()
-    Geneo = {x:[] for x in list(set(Gps))}
-    Ofile = open(OrderFile,"r")
-    d = 0
-    for line in Ofile:
-        if d == 0:
-            d += 1
-            continue
-        line = line.split()
-        Geneo[int(line[Row])].append(Fam[line[0]])
-    Ofile.close()
-    return Geneo
-
 
 
 def Gen_rand(Snp_lib,n,L):

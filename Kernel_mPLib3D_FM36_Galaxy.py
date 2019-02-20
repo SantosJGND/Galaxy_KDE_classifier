@@ -41,6 +41,8 @@ parser.add_argument("--clustmethod",default = "MeanShift",choices = ["MeanShift"
 parser.add_argument("--het",type = float,default = 5e-2, help = "Heterozygosity filter")
 ### 
 parser.add_argument("--dr",default = 'NMF',help = "Dimensionality reduction. options: PCA, NMF")
+###
+parser.add_argument("--mono",action= "store_false", help= "if given includes monomorphic SNPs")
 ### 
 parser.add_argument("--ncomp",type = int,default = 5,help = "Number of components kept in case of PCA reduction")
 ### 
@@ -48,6 +50,14 @@ parser.add_argument("--outmethod",default = "None",help = "Outlier filter of pop
 ###
 parser.add_argument("--overlap",type= int,default = 100,help = "Overlap between windows, in snps")
 ###
+parser.add_argument("--miss_cd",type= int,default = '9',help = "Missing data code")
+###
+parser.add_argument("--het_cd",type= int,default = '1',help = "Het allele code")
+###
+parser.add_argument("--hom_cd",type= int,default = '2',help = "Alt allele code")
+###
+
+
 
 args = parser.parse_args()
 
@@ -205,21 +215,34 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
     
     Construct = recursively_default_dict()
     
+    Codes = [0,0,0,0,0,0,0,0,0,0]
+    
+    Codes[int(args.miss_cd)]= nan
+    Codes[int(args.het_cd)]= nan
+    Codes[int(args.hom_cd)]= int(args.hom_cd)
+    
     for line in Geno:
-        Codes = [0,nan,2,0,0,0,0,0,0,nan]
+        
         d = Miss[Index][0]
+        
+        step= 1
+        
         if Index > end:
             break
-        if len([x for x in Whose if line[x] =='1']) / float(len(Whose)) > Filter_Het:
+        if len([x for x in Whose if line[x] == args.het_cd]) / float(len(Whose)) > Filter_Het:
+            Index += 1
+            continue
+        if len(list(set([x for x in Whose if line[x] not in [args.het_cd,args.miss_cd]]))) == int(args.mono):
             Index += 1
             continue
         if Index >= start and Index <= end:
             for judas in SequenceStore.keys():
                 SequenceStore[judas].append(Codes[int(line[judas])])
-            Win += 1
+            Win += step
             if Win == Window:
                 s1 = time.time()
                 window_start = Index - Window + 1
+                
                 Seq = SequenceStore
                 
                 ### Nan to Numeric. 
@@ -233,6 +256,7 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
                 b = np.concatenate((Aro,Daddy),axis = 0)
                 data = np.zeros((b.shape[0],b.shape[1]+1))
                 data[:,:-1] = b
+                
                 
                 if DIMr == 'PCA':
                     pca = PCA(n_components=n_comp, whiten=False,svd_solver='randomized').fit(data)
@@ -424,14 +448,16 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
                     Accurate.append(Fist)
                     Likes[D].append(Fist)
                 
-                
                 Points.append(Miss[window_start][0])
                 Points_out.append(Miss[Index][0])
                 s2 = time.time()
                 elapsed = s2 - s1
                 Intervals.append(elapsed)
-                SequenceStore = {fy:SequenceStore[fy][args.overlap:] for fy in Whose}
-                Win = Window - args.overlap
+                
+                overlap= args.overlap
+                
+                SequenceStore = {fy:SequenceStore[fy][overlap:] for fy in Whose}
+                Win = Window - overlap
                 if end - Index < Window:
                     Window += end - Index
         
@@ -458,7 +484,6 @@ import multiprocessing as mp
 nbProcs= int(args.proc)
 
 parameters = Set_up(CHR,CHR + 1,nbProcs,MissG)
-
 
 def what(job):
     try:

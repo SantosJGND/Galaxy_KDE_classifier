@@ -4,6 +4,7 @@ import itertools as it
 import numpy as np
 import re
 import pandas as pd
+import os
 
 import collections
 
@@ -18,7 +19,7 @@ from matplotlib.collections import BrokenBarHCollection
 ##########################
 ## Load data
 
-def read_3D_profiles(File_list):
+def read_3D_profiles_list(File_list):
     '''
     Reads Blocks files of reference KDE derived p-values across genomic windows.
     Returns dictionary: {CHR: {Windows: {refs: [p-value list]}}}
@@ -61,7 +62,7 @@ def read_3D_profiles(File_list):
 ### KDE-based classification across windows. 
 
 
-def Merge_class(Ref_profiles,focus_indicies,Out,Diff_threshold,BIN,X_threshold,coarse,sg_order):
+def Merge_class(Ref_profiles,focus_indicies,Out,Diff_threshold= 4,BIN= 5,X_threshold= 0.0001,coarse= False,sg_order= 3):
     '''
     Receives dictionary of reference p-values by individual by window and chromosome.
     Return dictionary of individual classifications according to the parameters provided.
@@ -153,6 +154,14 @@ def Merge_class(Ref_profiles,focus_indicies,Out,Diff_threshold,BIN,X_threshold,c
 # ideograms, once for genes).  The rest of this script will be prepping data
 # for input to this function
 #
+import matplotlib
+matplotlib.use('Agg')
+
+from matplotlib import pyplot as plt
+from matplotlib.collections import BrokenBarHCollection
+import pandas as pd
+
+
 def chromosome_collections(df, y_positions, height,  **kwargs):
     """
     Yields BrokenBarHCollection of features that can be added to an Axes
@@ -219,6 +228,231 @@ def compress_ideo(df,chromosome_list, Out):
     
     new_set = pd.DataFrame(new_set,columns = ['chrom', 'start', 'end', 'gieStain'])
     return new_set
+
+
+
+
+def plot_ideo(Blocks,CHR,Focus,label,ideo_height,ideo_spacing,height,width,Home,ID,xticks):
+    chromosomes = CHR
+    
+    chromosome_list = []
+    
+    Ideo = []
+    
+    for here in range(len(Focus)):
+        Subject = Focus[here]
+        
+        chromosome_list.extend(['chr'+str(Chr)+ '_' + Subject for Chr in chromosomes])
+        
+        color_ref= ['red','yellow','blue','black','orange','purple','green','silver','red3','deepskyeblue','navy','chartreuse','darkorchid3','goldenrod2']
+        color_ref= ['white','red']
+        
+        Stock = [[['chr'+str(Chr)+ '_' + Subject,bl,Out[Chr][bl],color_ref[Blocks[Chr][bl][here]]] for bl in sorted(Blocks[Chr].keys())] for Chr in chromosomes]
+        Stock = [y for y in it.chain(*[z for z in it.chain(*[Stock])])]
+        
+        Ideo.extend(Stock)
+    
+    
+    
+    # Height of each ideogram
+    chrom_height = ideo_height
+    
+    # Spacing between consecutive ideograms
+    chrom_spacing = ideo_spacing
+    
+    # Height of the gene track. Should be smaller than `chrom_spacing` in order to
+    # fit correctly
+    gene_height = 0.0
+    
+    # Padding between the top of a gene track and its corresponding ideogram
+    gene_padding = 0.0
+    
+    
+    # Keep track of the y positions for ideograms and genes for each chromosome,
+    # and the center of each ideogram (which is where we'll put the ytick labels)
+    ybase = 0
+    chrom_ybase = {}
+    gene_ybase = {}
+    chrom_centers = {}
+    
+    # Iterate in reverse so that items in the beginning of `chromosome_list` will
+    # appear at the top of the plot
+    for chrom in chromosome_list[::-1]:
+        chrom_ybase[chrom] = ybase
+        chrom_centers[chrom] = ybase + chrom_height / 2.
+        gene_ybase[chrom] = ybase - gene_height - gene_padding
+        ybase += chrom_height + chrom_spacing
+    
+    # Read in ideogram.txt, downloaded from UCSC Table Browser
+    ideo = pd.DataFrame(Ideo,columns = ['chrom', 'start', 'end', 'gieStain'])
+    
+    # Filter out chromosomes not in our list
+    ideo = ideo[ideo.chrom.apply(lambda x: x in chromosome_list)]
+    
+    # Colors for different chromosome stains
+    color_lookup = {
+        'red': [255, 0, 0],
+        'yellow': [255, 255, 0],
+        'blue': [0, 0, 255],
+        'orange': [255, 165, 0],
+        'green': [50, 205, 50],
+        'black': [0, 0, 0],
+        'purple': [128, 0, 128],
+        'silver': [211, 211, 211],
+        'white': [255,255,255]
+    }
+    
+    # Add a new column for colors
+    
+    ideo = compress_ideo(ideo,chromosome_list)
+    
+    #ideo = ideo[(ideo.start > 5.06e6) & (ideo.start < 7.06e6)]
+    
+    ideo['colors'] = ideo['gieStain'].apply(lambda x: tuple([round(y / float(255),1) for y in color_lookup[x]]))
+    # Add a new column for width
+    ideo['width'] = ideo.end - ideo.start
+    
+    # Width, height (in inches)
+    figsize = (width, height)
+    
+    fig = plt.figure(figsize=figsize)
+    ax = fig.add_subplot(111)
+    
+    # Now all we have to do is call our function for the ideogram data...
+    print("adding ideograms...")
+    for collection in chromosome_collections(ideo, chrom_ybase, chrom_height, edgecolors=None, linewidths= 0):
+        ax.add_collection(collection)
+    
+    
+    # Axes tweaking
+    ax.set_xticks([x for x in range(min(ideo.start),max(ideo.end),int(xticks))])
+    plt.xticks(fontsize = 10,rotation = 90)
+    ax.tick_params(axis = 'x',pad = 10)
+    
+    ax.tick_params(axis='y', which='major', pad=30)
+    ax.set_yticks([chrom_centers[i] for i in chromosome_list])
+    ax.set_yticklabels(chromosome_list, fontsize = 5)
+    ax.axis('tight')
+    filename= Home+ '/Ideo_id.'+ ID +'_label.' + str(label) +'_CHR' + str(chromosomes[-1]).zfill(2)+'.png'
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
+    plt.savefig(filename,bbox_inches = 'tight')
+
+
+
+
+def plot_ideo2(Blocks,CHR,Focus,Out,label,ideo_height,ideo_spacing,height,width,Home,ID,xticks):
+    chromosomes = CHR
+    
+    chromosome_list = []
+    all_blocks= [x for x in it.chain(*[Blocks[y].keys() for y in chromosomes])]
+    
+    Ideo = []
+    
+    for here in range(len(Focus)):
+        Subject = Focus[here]
+        
+        chromosome_list.extend(['chr'+str(Chr)+ '_' + Subject for Chr in chromosomes])
+        
+        color_ref= ['red','yellow','blue','black','orange','purple','green','silver','red3','deepskyeblue','navy','chartreuse','darkorchid3','goldenrod2']
+        color_ref= ['silver','red','blue','black','green']
+        
+        Stock = [[['chr'+str(Chr)+ '_' + Subject,bl,Out[Chr][bl],color_ref[Blocks[Chr][bl][here]]] for bl in sorted(Blocks[Chr].keys()) \
+        if Blocks[Chr][bl][here] != -1] for Chr in chromosomes]
+        
+        Stock = [y for y in it.chain(*[z for z in it.chain(*[Stock])])]
+        ## very lazy way of making sure matplotlib plots everyting, including whites.It hasn't been doing so despite the ax.set_xlim().. dunno why.
+        
+        Ideo.extend(Stock)
+    
+    print(len(Ideo))
+    if Ideo:
+    
+        # Height of each ideogram
+        chrom_height = ideo_height
+        
+        # Spacing between consecutive ideograms
+        chrom_spacing = ideo_spacing
+        
+        # Height of the gene track. Should be smaller than `chrom_spacing` in order to
+        # fit correctly
+        gene_height = 0.0
+        
+        # Padding between the top of a gene track and its corresponding ideogram
+        gene_padding = 0.0
+        
+        
+        # Keep track of the y positions for ideograms and genes for each chromosome,
+        # and the center of each ideogram (which is where we'll put the ytick labels)
+        ybase = 0
+        chrom_ybase = {}
+        gene_ybase = {}
+        chrom_centers = {}
+        
+        # Iterate in reverse so that items in the beginning of `chromosome_list` will
+        # appear at the top of the plot
+        for chrom in chromosome_list[::-1]:
+            chrom_ybase[chrom] = ybase
+            chrom_centers[chrom] = ybase + chrom_height / 2.
+            gene_ybase[chrom] = ybase - gene_height - gene_padding
+            ybase += chrom_height + chrom_spacing
+        
+        # Read in ideogram.txt, downloaded from UCSC Table Browser
+        ideo = pd.DataFrame(Ideo,columns = ['chrom', 'start', 'end', 'gieStain'])
+        
+        # Filter out chromosomes not in our list
+        ideo = ideo[ideo.chrom.apply(lambda x: x in chromosome_list)]
+        
+        # Colors for different chromosome stains
+        color_lookup = {
+            'red': [255, 0, 0],
+            'yellow': [255, 255, 0],
+            'blue': [0, 0, 255],
+            'orange': [255, 165, 0],
+            'green': [50, 205, 50],
+            'black': [0, 0, 0],
+            'purple': [128, 0, 128],
+            'silver': [211, 211, 211],
+            'white': [255,255,255],
+            'pink': [255,20,147]
+        }
+        
+        # Add a new column for colors
+        
+        #ideo = compress_ideo(ideo,chromosome_list)
+        
+        #ideo = ideo[(ideo.start > 5.06e6) & (ideo.start < 7.06e6)]
+        
+        ideo['colors'] = ideo['gieStain'].apply(lambda x: tuple([round(y / float(255),1) for y in color_lookup[x]]))
+        # Add a new column for width
+        ideo['width'] = ideo.end - ideo.start
+        
+        # Width, height (in inches)
+        figsize = (width, height)
+        
+        fig = plt.figure(figsize=figsize)
+        ax = fig.add_subplot(111)
+        
+        # Now all we have to do is call our function for the ideogram data...
+        print("adding ideograms...")
+        for collection in chromosome_collections(ideo, chrom_ybase, chrom_height, edgecolors=None, linewidths= 0):
+            ax.add_collection(collection)
+        
+        
+        # Axes tweaking
+        
+        ax.set_xlim(min(all_blocks),max(all_blocks))
+        ax.set_xticks([x for x in range(min(all_blocks),max(all_blocks),int(xticks))])
+        plt.xticks(fontsize = 10,rotation = 90)
+        ax.tick_params(axis = 'x',pad = 10)
+        
+        ax.tick_params(axis='y', which='major', pad=30)
+        ax.set_yticks([chrom_centers[i] for i in chromosome_list])
+        ax.set_yticklabels(chromosome_list, fontsize = 5)
+        
+        filename= Home+ '/Ideo_id.'+ ID +'_label.' + str(label) +'_CHR' + str(chromosomes[-1]).zfill(2)+'.png'
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
+        plt.savefig(filename,bbox_inches = 'tight')
+        plt.close(fig)
 
 
 

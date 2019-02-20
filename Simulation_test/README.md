@@ -20,7 +20,7 @@ The R package `ms` was used to simulate three populations coalescing along the f
                    =X           
 
 
-The number of initial haplotypes was set to 1e-4, the effective size of size of populations P1, P2 and P3 was set to 
+The number of initial haplotypes was set to 1e4, the effective size of size of populations P1, P2 and P3 was set to 
 600, 600 and 300. Mutation rate was kept constant at 1e-9 per generation.
 
 ### Admixture simulations.

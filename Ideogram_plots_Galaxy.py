@@ -6,8 +6,8 @@ Created on Thu Dec 21 15:25:38 2017
 @author: jgarcia
 """
 
-from Kernel_tools import *
-from Galaxy_Ideogram_tools import *
+from Kernel_tools import read_focus
+from Galaxy_Ideogram_tools import read_3D_profiles_list, Merge_class, chromosome_collections, compress_ideo
 
 import os
 import time
@@ -69,20 +69,6 @@ if len(Home) > 0:
 
 ########## Complementary files.
 
-def read_focus(index_file):
-    indxs = []
-    
-    Input = open(index_file,'r')
-    for line in Input:
-        line = line.split()
-        indxs.append(line[0])
-    
-    Input.close()
-    
-    return indxs
-
-
-
 import collections
 import time
 import itertools as it
@@ -100,7 +86,7 @@ def recursively_default_dict():
 print('To begin reading from: ')
 print(args.books)
 
-Ref_profiles, Names, Out = read_3D_profiles(args.books)
+Ref_profiles, Names, Out = read_3D_profiles_list(args.books)
 
 
 ######

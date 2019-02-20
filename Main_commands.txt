@@ -34,10 +34,12 @@ qsub -N FM36 -V -q bigmem.q -pe parallel_smp 10 -l mem_free=20G -b y python -u K
 --admx /gs7k1/home/jgarcia/PO_Core/admx_CORE.txt \
 --proc 10
 
+
+
 ## test run Ideogram plot:
 ### focusing on the GroupI (focus file)
 qsub -N ideo_1 -q normal.q -V -b yes python -u Ideogram_plots_Galaxy.py \
-/work/jgarcia/PO_lunch/Blocks_Request_st3_CHR06.txt \
+/work/jgarcia/PO_lunch/Blocks_Request_st3_CHR01.txt \
 --focus /work/jgarcia/PO_lunch/GroupI_names.txt \
 --CHR 6 \
 --height 5 \
@@ -45,6 +47,8 @@ qsub -N ideo_1 -q normal.q -V -b yes python -u Ideogram_plots_Galaxy.py \
 --threshold 2 \
 --outlier 0.0001 \
 --coarse
+
+
 
 ### not focusing (plots all inds if --focus not given)
 qsub -N ideo_12 -q normal.q -V -b yes python -u Ideogram_plots_Galaxy.py \
@@ -54,4 +58,5 @@ qsub -N ideo_12 -q normal.q -V -b yes python -u Ideogram_plots_Galaxy.py \
 --width 18 \
 --bin 10 \
 --threshold 2
+
 

@@ -81,6 +81,90 @@ def read_geno_books(books):
     return library
 
 
+
+def read_3D_profiles_subset(Books,Focus= '',Ncol_blocks= 4,Ncol_profiles= 3):
+    
+    s0 = time.time()
+    
+    Blocks= recursively_default_dict()
+    Profiles= recursively_default_dict()
+    Out = recursively_default_dict()
+    Names= []
+    
+    for Chr in Books.Chr.unique():
+        
+        Shelf= Books[(Books.Chr== Chr)]
+        
+        Blocks[Chr]= recursively_default_dict()
+        Profiles[Chr]= recursively_default_dict()
+        
+        start= '3'
+        
+        for start in Shelf.start.unique():
+            
+            Series= Shelf[(Shelf.start== start)]
+            
+            if len(Series) != 2:
+                print('{0} files were provided for analysis Chr: {1} - start: {2}. 2 files are expected.'.format(len(Series),Chr,start))
+                break
+            
+            blocks_file= Series.loc[Series['tag'] == 'Request','file']
+            blocks_file= blocks_file.iloc[0]
+            
+            profiles_file = Series.loc[Series['tag'] == 'profiles','file']
+            profiles_file= profiles_file.iloc[0]
+            ##### read blocks file
+            Input= open(blocks_file,'r')
+            d= 0
+            
+            for line in Input:
+                line= line.split()
+                
+                if d== 0:
+                    line=line[4:]
+                    Names= line
+                    
+                    if Focus:
+                        Focus = read_focus(Focus)
+                        compound_ref= [Names.index(x) for x in Focus]
+                    else:
+                        Focus= Names
+                        compound_ref= list(range(len(Names)))
+                
+                else:
+                    
+                    Blocks[int(line[0])][int(line[1])][int(line[3])]= [float(line[x + Ncol_blocks]) for x in compound_ref]
+                    if line[3] == '0':
+                        Out[int(line[0])][int(line[1])] = int(line[2])
+                d += 1
+            
+            Input.close()
+            
+            ##### read profiles file
+            
+            Input= open(profiles_file,'r')
+            d= 0
+            
+            for line in Input:
+                line= line.split()
+                
+                if d== 0:
+                    line=line[3:]
+                    Names= line
+                else:
+                    Profiles[int(line[0])][int(line[1])][int(line[2])]= [float(line[x + Ncol_profiles]) for x in compound_ref]
+                
+                d += 1
+            
+            Input.close()
+    
+    s1= time.time()
+    
+    print(str(s1-s0) + ' seconds elapsed.')
+    print(str((s1-s0) / float(60)) + ' minutes elapsed.')
+    return Blocks, Profiles, Names, Out, Focus, compound_ref
+
+
 def read_3D_profiles(Books):
     
     s0 = time.time()
@@ -194,8 +278,6 @@ def read_3D_profiles_list(File_list):
 
 ##########################################
 ######### Classification
-
-
 
 def Merge_class(Ref_profiles,focus_indicies,Out,Diff_threshold,BIN,X_threshold,coarse,sg_order):
     Blocks_genome = recursively_default_dict()
