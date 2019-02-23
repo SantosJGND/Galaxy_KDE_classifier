@@ -1,0 +1,13 @@
+To begin reading from: 
+['/work/jgarcia/PO_lunch/Blocks_Request_stOv25.MADA_CHR03.txt']
+73.20372223854065 seconds elapsed.
+1.2200620373090107 minutes elapsed.
+3
+number of reference populations: 3
+Number chromosomes selected: 1
+adding ideograms...
+/usr/local/bioinfo/python/3.4.3_build2/lib/python3.4/site-packages/matplotlib-1.4.3-py3.4-linux-x86_64.egg/matplotlib/collections.py:590: FutureWarning: elementwise comparison failed; returning scalar instead, but in the future will perform elementwise comparison
+  if self._edgecolors == str('face'):
+Done.
+total: 2011.9184353351593 seconds elapsed.
+total: 33.531973922252654 minutes elapsed.

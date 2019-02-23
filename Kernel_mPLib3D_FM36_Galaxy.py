@@ -30,6 +30,8 @@ parser.add_argument("--out",type= str,default= '',help = "output directory")
 
 parser.add_argument("--MSprint",action= "store_true",help = "if given prints cluster stats.")
 ###
+parser.add_argument("--PCvar",type= float,default= 0,help = "if above 0 retain dimensions as a function of PC variance")
+###
 parser.add_argument("--VARprint",action= "store_true",help = "if given prints PC explained variance per window. If PCA is not chosen just prints out 0's")
 ###
 parser.add_argument("--id",type= str,default= '1',help = "Give your analysis an ID. default is set to integer 2")
@@ -257,12 +259,22 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
                 data = np.zeros((b.shape[0],b.shape[1]+1))
                 data[:,:-1] = b
                 
-                
                 if DIMr == 'PCA':
-                    pca = PCA(n_components=n_comp, whiten=False,svd_solver='randomized').fit(data)
-                    data = pca.transform(data)
-                    PC_var.append([x for x in pca.explained_variance_])
-                    data= local_sampling_correct(data)
+                    if args.PCvar:
+                        pca = PCA(n_components=10, whiten=False,svd_solver='randomized').fit(data)
+                        local_pcvar= list(pca.explained_variance_ratio_)
+                        data = pca.transform(data)
+                        cumsum_pcvar= local_pcvar.cumsum()
+                        PC_thresh= [x for x in range(len(cumsum_pcvar)) if cumsum_pcvar[x] >= args.PCvar]
+                        
+                        local_pcvar= [local_pcvar[x] for x in PC_thresh]
+                        data= data[:,PC_thresh]
+                    else:
+                        pca = PCA(n_components= n_comp, whiten=False,svd_solver='randomized').fit(data)
+                        local_pcvar= list(pca.explained_variance_ratio_)
+                        data = pca.transform(data)
+                    
+                    PC_var.append(local_pcvar)
                 
                 if DIMr == 'NMF':
                     from sklearn.decomposition import NMF
