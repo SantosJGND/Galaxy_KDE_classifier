@@ -260,19 +260,9 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
                 data[:,:-1] = b
                 
                 if DIMr == 'PCA':
-                    if args.PCvar:
-                        pca = PCA(n_components=10, whiten=False,svd_solver='randomized').fit(data)
-                        local_pcvar= list(pca.explained_variance_ratio_)
-                        data = pca.transform(data)
-                        cumsum_pcvar= local_pcvar.cumsum()
-                        PC_thresh= [x for x in range(len(cumsum_pcvar)) if cumsum_pcvar[x] >= args.PCvar]
-                        
-                        local_pcvar= [local_pcvar[x] for x in PC_thresh]
-                        data= data[:,PC_thresh]
-                    else:
-                        pca = PCA(n_components= n_comp, whiten=False,svd_solver='randomized').fit(data)
-                        local_pcvar= list(pca.explained_variance_ratio_)
-                        data = pca.transform(data)
+                    pca = PCA(n_components= n_comp, whiten=False,svd_solver='randomized').fit(data)
+                    local_pcvar= list(pca.explained_variance_ratio_)
+                    data = pca.transform(data)
                     
                     PC_var.append(local_pcvar)
                 
