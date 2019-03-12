@@ -36,20 +36,23 @@ appplication can be readily set up on any server as well as locally.
 
 ### Output analysis:
 
-- targeted KDE summary: Analyse the output using jupyter notebooks. 
+- targeted KDE summary: Vector cluster analysis against accession structure, average likelihood, geographic origin and genomic coordinates. 
 
-**Includes**: Vector cluster analysis against accession structure, average likelihood, geographic origin and genomic coordinates.
+> [notebook](https://nbviewer.jupyter.org/github/SantosJGND/Galaxy_KDE_classifier/blob/master/Downstream_functions/Analyses_Jsubtrop_self_KDE/Targeted_analysis_plot.ipynb)
 
 
-**Examples**
+## Example test studies. 
+*python applications running on [heroku](https://www.heroku.com/platform) servers.*
 
-Example queries of targeted analysis. Free Heroku servers will quickly get crowded and are likely to lag.
+Targeted studies combining supervised haplotype classification with mean shift cluster analysis. 
+
+**warning**: Heroku servers are 512 Mb RAM and take one user at a time only.
 
 - Genome-wide association to a target reference: [App_global](https://cbasmati-japonica-signals.herokuapp.com/)
 
 - Chromosome specific association to target references with regional focus: [App_regional](https://cbasmati-chr08-examples.herokuapp.com/)
 
-- Gene specific association to target references: [App_gene](https://sh4-gene.herokuapp.com/)
+- Association to target references at gene of interest: [App_gene](https://sh4-gene.herokuapp.com/)
 
 - Individual specific association to target references: [App_ind](https://iris-313-12074.herokuapp.com/)
 
