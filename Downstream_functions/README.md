@@ -41,6 +41,11 @@ appplication can be readily set up on any server as well as locally.
 > [notebook](https://nbviewer.jupyter.org/github/SantosJGND/Galaxy_KDE_classifier/blob/master/Downstream_functions/Analyses_Jsubtrop_self_KDE/Targeted_analysis_plot.ipynb)
 
 
+- KDE targeted distance analysis.
+
+> [notebook](https://nbviewer.jupyter.org/github/SantosJGND/Galaxy_KDE_classifier/blob/master/Downstream_functions/JapanKorea_tropical_Rdist/model_Rdist.ipynb)
+
+
 ## Example test studies. 
 *python applications running on [heroku](https://www.heroku.com/platform) servers.*
 
