@@ -6,6 +6,15 @@ Link to be provided soon.
 
 ### -- script: code_track.py
 
+**Context.** The endpoint of association analysis in population genetics. Following local classificaiton, estimates are available of the genome-wide 
+proximity of each accession to each reference population in play. However, reference populations can be large and structured, in particular 
+older populations that might have amassed considerable genetic variation through the years, be it through mutation or the incorporation 
+of novel genetic material from cryptic sources.
+
+Our supervised classification has served the purpose of simplifying our genomic landscape into a handful of signals we can read. We can now 
+pinpoint contradictory signals along the genomes of particular accessions which would, in a genome-wide analysis, have resulted in intermediate 
+and even outlier positions. Separate analyses of cleaner groups of signals can inform us on the structure of a given group in more depth.
+
 Because we allow for intermediate classes for plotting and to guide other steps of the analysis, population labels are recoded. 
 In the following section, we shall discuss how to perform a targeted analysis of cluster associations on the data extracted 
 during the genome crawl. In order to direct this code the user must know the label-to-code map produced. code_track.py takes the 
@@ -25,14 +34,12 @@ Through the *--app* option, a python dash application is produced for the explor
 their location along the genome of focal accessions. Procfile, requirements and gitignore files are automatically produced so that the 
 appplication can be readily set up on any server as well as locally.
 
-**Context.** The endpoint of association analysis in population genetics. Following local classificaiton, estimates are available of the genome-wide 
-proximity of each accession to each reference population in play. However, reference populations can be large and structured, in particular 
-older populations that might have amassed considerable genetic variation through the years, be it through mutation or the incorporation 
-of novel genetic material from cryptic sources.
+### Output analysis:
 
-Our supervised classification has served the purpose of simplifying our genomic landscape into a handful of signals we can read. We can now 
-pinpoint contradictory signals along the genomes of particular accessions which would, in a genome-wide analysis, have resulted in intermediate 
-and even outlier positions. Separate analyses of cleaner groups of signals can inform us on the structure of a given group in more depth.
+- targeted KDE summary: Analyse the output using jupyter notebooks. 
+
+**Includes**: Vector cluster analysis against accession structure, average likelihood, geographic origin and genomic coordinates.
+
 
 **Examples**
 

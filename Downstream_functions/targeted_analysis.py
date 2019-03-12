@@ -6,6 +6,16 @@ Created on Wed Dec 06 18:53:36 2017
 """
 
 import collections
+import itertools as it
+import numpy as np
+import pandas as pd
+import scipy
+
+from sklearn.neighbors import KernelDensity
+from sklearn.decomposition import PCA
+from sklearn.model_selection import GridSearchCV
+from sklearn.cluster import estimate_bandwidth
+from sklearn.cluster import MeanShift, estimate_bandwidth
 
 from Kernel_tools import recursively_default_dict, read_refs, read_focus, BIMread, FAMread
 from Galaxy_Ideogram_tools import chromosome_collections, plot_ideo2, compress_ideo, Merge_class
@@ -38,6 +48,8 @@ parser.add_argument("--id",type= str,help = "Name your analysis")
 
 parser.add_argument("--target",type= str,help = "target population")
 
+parser.add_argument("--Dr_var",type= str,default= 'target',help = "focus Dr on target ['target'], admix+target ['focus_inc'] or global variation ['all']")
+
 parser.add_argument("--ref",type= str,help = "reference accessions indexes in genofile.")
 
 parser.add_argument("--CHR",type= int,help = "chromosome to draw ideogram of.")
@@ -57,6 +69,8 @@ parser.add_argument("--info",type= str,help = "optional information file on acce
 parser.add_argument("--app",action= "store_true",help = "if given writes dash application and accompanying files.")
 
 parser.add_argument("--reduc",action= "store_true",help = "if given prints cluster stats.")
+
+parser.add_argument("--liss_control",action= "store_true",help = "if given controls supervised classification used by one where data is smoothed. Used to ignore sporadic outliers.")
 
 parser.add_argument("--coarse",action='store_false',help= 'to smooth or not to smooth.')
 
@@ -99,7 +113,7 @@ print('library:')
 print(Library.sort_values(by= ['Chr','start']))
 
 
-Ref_profiles, Profiles, Names, Out = read_3D_profiles(Library)
+Ref_profiles, Profiles, Names, Out= read_3D_profiles(Library)
 
 
 ######
@@ -115,13 +129,23 @@ Fam = FAMread(args.fam)
 Diff_threshold = args.threshold
 X_threshold= args.outlier
 
-refs_lib, Parents = read_refs(args.ref,Fam)
+refs_lib, Parents, Absent_refs = read_refs(args.ref,Fam)
+
+if Absent_refs:
+    print('The following IDs were not found in .fam file: ' + ', '.join([x for x in Absent_refs]))
+    
+    perc_missing= float(len(Absent_refs)) / (sum([len(x) for x in refs_lib.values()]) + len(Absent_refs))
+    
+    if perc_missing >= .7:
+        print('{} % references missing from .fam file.'.format(round(perc_missing*100,2)))
 
 
 if args.focus:
     Focus = read_focus(args.focus)
 else:
     Focus = Names
+
+compound_reference = [Names.index(x) for x in Focus]
 
 focus_indexes= [x for x in range(len(Focus))]
 
@@ -132,16 +156,18 @@ if len(Absent) > 0:
     print('Analysis will proceed without them.')
     Focus= [x for x in Focus if x in Names]
 
-compound_reference = [Names.index(x) for x in Focus]
 
-Blocks = Merge_class(Ref_profiles,compound_reference,Out,args.threshold,args.bin,args.outlier)
+Blocks, Npops = Merge_class(Ref_profiles,compound_reference,Out,args.threshold,args.bin,args.outlier,args.coarse,args.sg_order)
+
+if args.liss_control:
+    Blocks_liss, Npops = Merge_class(Ref_profiles,compound_reference,Out,args.threshold,args.bin,args.outlier,True,args.sg_order)
 
 ####
 ####
 
 if args.CHR:
-    if len([x for x in args.CHR if x not in Blocks.keys()]):
-        print('{} chromomes not found in input Blocks file.'.format([x for x in args.CHR if x not in Blocks.keys()]))
+    if len([x for x in Blocks.keys() if x == args.CHR]) == 0:
+        print('{} chromomes not found in input Blocks file.'.format([x for x in Blocks.keys() if x == args.CHR]))
     
     chromosomes= [args.CHR]
 else:
@@ -199,60 +225,55 @@ print('target: {0}'.format(target))
 ##### Selecting windows to focus on:
 
 #### Chose_profiles: automatically chose clusters with at least one included 
-#### focus accession of 'target' color at a threshold >= target_threshold
+#### focus accession of 'target' color. 
+#### Cluster assignment is estimated as max pval above outlier threshold.
 
 MS_inliers= recursively_default_dict()
 Chose_profiles= recursively_default_dict()
 Coordinates= []
 Empty= []
 
-for CHR in chromosomes:
-    for bl in Blocks[CHR].keys():
+for CHR in sorted(chromosomes):
+    for bl in sorted(Blocks[CHR].keys()):
         if len([x for x in focus_indexes if Blocks[CHR][bl][x] in target]) / float(len(Focus)) < threshold:
             continue
         
-        Bls= list(Blocks[CHR][bl].keys())
+        Bls= sorted(list(Profiles[CHR][bl].keys()))
         pVals= np.array([Profiles[CHR][bl][y] for y in Bls])
         
-        max_vals= np.amax(pVals)
-        max_indx= np.argmax(pVals)
+        max_vals= np.amax(pVals,axis= 0)
+        max_indx= np.argmax(pVals,axis= 0)
         
-        inlier= [x for x in compound_reference if max_vals[x] >= args.outlier and Blocks[CHR][bl][compound_reference.index(x)] in target]
+        inlier= [x for x in compound_reference if max_vals[x] >= args.outlier and Blocks[CHR][bl][Focus.index(Names[x])] in target]
         
-        BL_select= list(set([max_indx[x] for x in inliers]))
+        if args.liss_control:
+            inlier= [x for x in inlier if Blocks_liss[CHR][bl][Focus.index(Names[x])] in target]
+        
+        BL_select= list(set([max_indx[x] for x in inlier]))
+        
+        #print('clusters {} selected. {} %'.format(BL_select,len(BL_select)/float(len(Bls))))
         
         if not BL_select:
             Empty.append([CHR,bl])
             continue
         
         BL_select= {
-            Bls[x]: pVals[x] for x in BL_select
+            x: pVals[x] for x in BL_select
             }
         
         BLextract= list(BL_select.keys())
         
         Assignment= {
-                b: [compound_reference.index(x) for x in inlier if max_indx[x] == b] for b in BLextract
+                Bls[b]: [Focus.index(Names[x]) for x in inlier if max_indx[x] == b] for b in BLextract
             }
         
-        Chose_profiles[CHR][bl]= BLextract
+        Chose_profiles[CHR][bl]= list(Assignment.keys())
         
-        for bls in BLextract:
-            Coordinates.append([CHR,bl,Out[CHR][bl],bls,'.'.join([str(x) for x in Assignment[bls]])])
+        for bls in sorted(Assignment.keys()):
+            Coordinates.append([CHR,bl,Out[CHR][bl],bls])
             MS_inliers[CHR][bl][bls]= Assignment[bls]
 
 
-
-'''
-Chose_profiles = {CHR:{bl:[y for y in Profiles[CHR][bl].keys() if sum([int(Profiles[CHR][bl][y][z] >= MS_threshold) \
-for z in [compound_reference[x] for x in focus_indexes if Blocks[CHR][bl][x] in target]]) >= 1] \
-for bl in Blocks[CHR].keys() if \
-len([x for x in focus_indexes if Blocks[CHR][bl][x] in target]) / float(len(Focus)) >= threshold} \
-for CHR in Blocks.keys() if CHR in chromosomes}
-
-Coordinates = [[[[CHR,bl,Out[CHR][bl],x] for x in Chose_profiles[CHR][bl]] for bl in sorted(Chose_profiles[CHR].keys())] for CHR in sorted(Chose_profiles.keys())]
-Coordinates = [z for z in it.chain(*[y for y in it.chain([x for x in it.chain(*Coordinates)])])]
-'''
 
 Coordinates= np.array(Coordinates)
 
@@ -266,6 +287,7 @@ if args.random > 0:
     Who= np.random.choice(range(Coordinates.shape[0]),args.random)
     
     Coordinates= Coordinates[Who,:]
+    
     Clover= Clover[Who,:]
     
 
@@ -273,7 +295,6 @@ if args.random > 0:
 #### Pre processing and dimensionality reduction of matrix
 #### of selected clusters.
 ####
-
 
 from sklearn import preprocessing
 
@@ -284,9 +305,7 @@ print('Clover shape: ', Clover.shape)
 
 Clover = preprocessing.scale(Clover,axis = 1)
 #
-
 print("Clover shape: ", Clover.shape)
-
 
 reefer= [g for g in it.chain(*[refs_lib[y] for y in sorted(refs_lib.keys())])]
 
@@ -302,12 +321,32 @@ Trend= np.repeat([0,1],[len(mary),len(reefer)])
 
 
 ## apply pca to reference accessions, transform the rest.
-variation_focus= [Names.index(Fam[x]) for x in it.chain(*[refs_lib[z] for z in list(set(it.chain(*[code_back[y] for y in target])))])]
+
+Dr_var= args.Dr_var
+Dr_processes= ['target','focus_inc','all']
+
+if Dr_var not in Dr_processes:
+    print('Dr_process selected: {}, Dr_var processes available: {}'.format(Dr_var,Dr_processes))
+    Dr_var= 'target'
+
+print('focusing Dr on {}'.format(Dr_var))
+
+if Dr_var== 'target':
+    variation_focus= [Names.index(Fam[x]) for x in it.chain(*[refs_lib[z] for z in list(set(it.chain(*[code_back[y] for y in target])))])]
+
+if Dr_var== 'focus_inc':
+    variation_focus= [Names.index(x) for x in Focus]
+    variation_focus.extend([Names.index(Fam[x]) for x in it.chain(*[refs_lib[z] for z in list(set(it.chain(*[code_back[y] for y in target])))])])
+
+if Dr_var== 'all':
+    variation_focus= Subset
+
 
 ### PCA
 pca = PCA(n_components=5, whiten=False).fit(Clover[:,variation_focus].T)
 X_se = pca.transform(Clover[:,Subset].T)
-COMPS = pca.components_.T*np.sqrt(pca.explained_variance_)
+COMPS = pca.components_.T #*np.sqrt(pca.explained_variance_)
+
 
 ###############################################################################
 ########################### PAINTING SHIT!! ###################################
@@ -354,33 +393,6 @@ label_select = {y:[x for x in range(len(labels1)) if labels1[x] == y] for y in s
 ############################################################################
 ############################################################################
 ############ Bring out ideograms ##########################################
-
-if args.plot == True:
-    Ideo_home= Home + '/Ideos'
-    
-    Blancs= {aim:{Chr:{bl:[0]*len(Focus) for bl in Blocks[Chr].keys()} for Chr in Blocks.keys()} for aim in list(set(labels1))}
-    
-    target_block= {Chr:{bl:[int(x in target) for x in Blocks[Chr][bl]] for bl in Blocks[Chr].keys()} for Chr in chromosomes}
-    
-    
-    for Chr in chromosomes:
-        plot_ideo2(target_block,[Chr],Focus,'all',args.chrom_height,args.chrom_gap,args.height,args.width,Ideo_home,args.id)
-    
-    for n in range(len(Coordinates)):
-        site= Coordinates[n]
-        trigger= MS_inliers[site[0]][site[1]][site[3]]
-        #trigger= [x for x in range(len(Focus)) if Profiles[site[0]][site[1]][site[3]][compound_reference[x]] >= MS_threshold and Blocks[site[0]][site[1]][x] in target]
-        
-        for v in trigger:
-            Blancs[labels1[n]][site[0]][site[1]][v] = 1
-    
-    for aim in Blancs.keys():
-        if len(Focus)== 1:
-            plot_ideo2(Blancs[aim],Blocks.keys(),Focus,aim,args.chrom_height,args.chrom_gap,args.height,args.width,Ideo_home,args.id)
-        else:
-            for Chr in chromosomes:
-                plot_ideo2(Blancs[aim],[Chr],Focus,aim,args.chrom_height,args.chrom_gap,args.height,args.width,Ideo_home,args.id)
-
 
 ###
 ### DELETE Ref_profiles AND Profiles (trying to save space)
@@ -532,6 +544,36 @@ if args.app:
 
 
 
+
+if args.plot == True:
+    Ideo_home= Home + '/Ideos'
+    
+    Blancs= {aim:{Chr:{bl:[[-1,0][int(x in target)] for x in Blocks[Chr][bl]] for bl in Blocks[Chr].keys()} for Chr in Blocks.keys()} for aim in list(set(labels1))}
+    
+    target_block= {Chr:{bl:[[-1,1][int(x in target)] for x in Blocks[Chr][bl]] for bl in Blocks[Chr].keys()} for Chr in chromosomes}
+    
+    
+    for Chr in chromosomes:
+        plot_ideo2(target_block,[Chr],Focus,Out,'all',args.chrom_height,args.chrom_gap,args.height,args.width,Ideo_home,args.id,args.xticks)
+        
+    for n in range(len(Coordinates)):
+        site= Coordinates[n]
+        trigger= MS_inliers[site[0]][site[1]][site[3]]
+        
+        for v in trigger:
+            Blancs[labels1[n]][site[0]][site[1]][v] = 1
+    
+    for aim in Blancs.keys():
+        if len(Focus)== 1:
+            plot_ideo2(Blancs[aim],Blocks.keys(),Focus,Out,aim,args.chrom_height,args.chrom_gap,args.height,args.width,Ideo_home,args.id,args.xticks)
+        else:
+            for Chr in chromosomes:
+                plot_ideo2(Blancs[aim],[Chr],Focus,Out,aim,args.chrom_height,args.chrom_gap,args.height,args.width,Ideo_home,args.id,args.xticks)
+
+
+
+
+
 filename= Home + "/ID_focus.txt"
 os.makedirs(os.path.dirname(filename), exist_ok=True)
 
@@ -539,14 +581,6 @@ Output = open(filename,"w")
 
 for ind in Focus:
     Output.write(ind)
-    Output.write("\n")
-
-Output.close()
-
-
-for Future in range(Cameo.shape[0]):
-    for Machine in range(Cameo.shape[1]):
-        Output.write(str(Cameo[Future,Machine]) + "\t")
     Output.write("\n")
 
 Output.close()
@@ -577,11 +611,13 @@ os.makedirs(os.path.dirname(filename), exist_ok=True)
 
 Output = open(filename,"w")
 
-Output.write('\t'.join(['chrom','start','end','cluster','label']))
+Output.write('\t'.join(['chrom','start','end','cluster','members','label']))
 Output.write('\n')
 
 for axe in range(Coordinates.shape[0]):
     Output.write('\t'.join([str(x) for x in Coordinates[axe,:]]) + '\t')
+    Output.write('.'.join([str(x) for x in MS_inliers[Coordinates[axe,0]][Coordinates[axe,1]][Coordinates[axe,3]]]) + '\t')
+    
     Output.write(str(labels1[axe]) + '\n')
 
 Output.close()
@@ -618,5 +654,6 @@ for entry in range(COMPS.shape[0]):
     Output.write("\n")
 
 Output.close()
+
 
 print('Done.')
