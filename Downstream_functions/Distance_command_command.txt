@@ -1,0 +1,22 @@
+
+
+
+qsub -N CHtemp -q normal.q -l mem_free=70G -V -b yes python -u \
+Gen_distances_Layers.py \
+/work/jgarcia/PO_lunch/Blocks_Request_st3_CHR01.txt \
+/work/jgarcia/PO_lunch/Blocks_profiles_st3_CHR01.txt \
+    [...]
+/work/jgarcia/PO_lunch/Blocks_Request_st3_CHR12.txt \
+/work/jgarcia/PO_lunch/Blocks_profiles_st3_CHR12.txt \
+--genoSuf /gs7k1/home/jgarcia/olde_home/FILTER_GENO/SplitGENO/GENO_chr \
+--ref /gs7k1/home/jgarcia/PO_Core/refs_CORE.txt \
+--focus /work/jgarcia/PO_lunch/Jtemperate_names.txt \
+--coords /work/jgarcia/PO_lunch/Analyses_Jtemperate_self_KDE/Profile_coordinates_3_CHR12.Jtemperate_self_KDE.txt \
+--code 3 \
+--fam /gs7k1/home/jgarcia/olde_home/FILTER_GENO/F3G/NG_001.fam \
+--bim /gs7k1/home/jgarcia/olde_home/FILTER_GENO/F3G/NG_001.bim \
+--id JTempChinese-CHR_Rdist \
+--height 7 --width 18 \
+--outlier .0001 --ms .1 \
+--plot --reduc --coarse 
+

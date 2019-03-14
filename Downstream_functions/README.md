@@ -70,9 +70,9 @@ appplication can be readily set up on any server as well as locally.
 > [notebook](https://nbviewer.jupyter.org/github/SantosJGND/Galaxy_KDE_classifier/blob/master/Downstream_functions/Analyses_Jsubtrop_self_KDE/Targeted_analysis_plot.ipynb)
 
 
-### script: Gen_distances_Layers.py
+### script: Gen_distances_Layer.py
 
-The script *Gen_distances_Layers.py* adds another layer of information to the targeted analysis of cluster 
+The script *Gen_distances_Layer.py* adds another layer of information to the targeted analysis of cluster 
 membership provided by *targeted_analysis.py*. The user inputs the coordinates file output
 of the targeted analysis and indicates which cluster group to focus on. Local genomic windows are queried by 
 cluster queried. Local haplotypes assigned to queried cluster are identified by maximum *p*-value. Centroid
@@ -80,7 +80,7 @@ of target haplotypes is calculated in PCA feature space. Centroid of reference a
 target haplotypes, is also calculated. Euclidean distances of all accessions to target and reference centroids are estimated.
 
 **Input**
-- *Blocks_profiles*: output of *Galaxy_KDE.py*
+- *Blocks_profiles* and *Blocks_request*: Output of *Galaxy_KDE.py*. Supervised and unsupervised *p*-values across local genomic windows.
 - `--genoSuf`: suffix of geno files included in coordinates file. must be followed by int(chr)+ '.txt'
 - `--ref`  reference accession file. Must be same as used for supervised analysis. 
 - `--focus` one column file. Includes accessions if absent from `ref`.
