@@ -72,12 +72,12 @@ appplication can be readily set up on any server as well as locally.
 
 ### script: Gen_distances_Layers.py
 
-The script *Gen_distances_Layers.py* adds another layer of information to the analysis conducted through the 
-targeted analysis of cluster membership provided by *targeted_analysis.py*. The user inputs the coordinates file output
+The script *Gen_distances_Layers.py* adds another layer of information to the targeted analysis of cluster 
+membership provided by *targeted_analysis.py*. The user inputs the coordinates file output
 of the targeted analysis and indicates which cluster group to focus on. Local genomic windows are queried by 
 cluster queried. Local haplotypes assigned to queried cluster are identified by maximum *p*-value. Centroid
 of target haplotypes is calculated in PCA feature space. Centroid of reference accessions in `ref` file, excluding
-target haplotypes. Euclidean distances of all accessions to target and reference centroids are calculated.
+target haplotypes, is also calculated. Euclidean distances of all accessions to target and reference centroids are estimated.
 
 **Input**
 - *Blocks_profiles*: output of *Galaxy_KDE.py*
@@ -89,7 +89,7 @@ target haplotypes. Euclidean distances of all accessions to target and reference
 - `--fam`  accompanying .fam file to .geno. Used here because the function `read_reds` was not yet adapted to this layer.
 - `--bim` plink .bim file.
 
-`--id`: string. Name your analysis. Incorporated in filenames; `--height` and `--width`: Output ideogram size, in inches; 
+`--id`: string. Name your analysis. Incorporated in filenames; `--height` and `--width`: float. output ideogram size, in inches; 
 `--plot`: controls ideogram output. `--reduc`: reduces PCA projections for jupyter plots.
 
 
