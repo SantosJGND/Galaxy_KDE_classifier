@@ -1,0 +1,16 @@
+
+
+qsub -N Jtrop_Ind -q normal.q -l mem_free=80G -V -b yes python -u targeted_analysis.py \
+/work/jgarcia/PO_lunch/Blocks_Request_st3_CHR11.txt \
+/work/jgarcia/PO_lunch/Blocks_profiles_st3_CHR11.txt \
+--CHR 11 \
+--start 11300000 \
+--end 13300000 \
+--ref /gs7k1/home/jgarcia/PO_Core/refs_CORE.txt \
+--focus /work/jgarcia/PO_lunch/Jtropical_names.txt \
+--target 1 \
+--fam /gs7k1/home/jgarcia/olde_home/FILTER_GENO/F3G/NG_001.fam \
+--id Jtrop_ind_CHR11Middle \
+--height 7 --width 18 --outlier .0001 \
+--ms .15 --plot --reduc --coarse \
+
