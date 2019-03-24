@@ -1,0 +1,42 @@
+
+## subset Nsample
+qsub -N process -V -q normal.q -l mem_free=20G \
+-b y python -u Process_plink.py \
+--plinkfile /gs7k1/home/jgarcia/olde_home/FILTER_GENO/F3G/NG_001 \
+--chr 8 \
+--Nsample 15000 \
+--maf .01 \
+--vcf \
+--geno
+
+## subset Region
+qsub -N process -V -q normal.q -l mem_free=20G \
+-b y python -u Process_plink.py \
+--plinkfile /gs7k1/home/jgarcia/olde_home/FILTER_GENO/F3G/NG_001 \
+--chr 8 \
+--region 8000000,1000000 \
+--miss .01 \
+--vcf \
+--geno
+
+
+parser.add_argument("--Nsample",type=int,default= 1000,help = "Number of SNPs to sample")
+
+parser.add_argument("--chr",type=str,default= '',help = "chromosomes to sample, comma sep for multiple")
+
+parser.add_argument("--thin",type= float,default= 0,help = "percentage of SNPs to keep")
+
+parser.add_argument("--region",type= str,default= '',help = "physical region to extract")
+
+parser.add_argument("--maf",type= float,default= 0,help = "min allele freq filter")
+
+parser.add_argument("--miss",type= float,default= 0,help = "miss data freq filter. locus.")
+
+parser.add_argument("--mind",type= float,default= 0,help = "miss data freq filter. ind. ")
+
+parser.add_argument("--hwe",type= float,default= 0,help = "hwe significance filter")
+
+parser.add_argument("--vcf",action= "store_true", help= "if given reformats to .vcf")
+### 
+parser.add_argument("--geno",action= "store_true", help= "if given and vcf == True reformats vcf to .geno")
+### 

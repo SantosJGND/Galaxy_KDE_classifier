@@ -96,6 +96,35 @@ def read_focus(index_file):
     return indxs
 
 
+def IDread(bimFile):
+    '''
+    reads .bim file from plink genomic data.
+    returns dictionary of {geno_snp_index: locus}
+    '''
+    File = open(bimFile,"r")
+    #Nsnps = {x:recursively_default_dict() for x in range(1,13)}
+    Nsnps = recursively_default_dict()
+    Gindex = recursively_default_dict()
+    for x in range(1,13):
+        Nsnps[x] = recursively_default_dict()
+    d = 0
+    CHR = 0
+    for line in File:
+        line = line.split()
+        if d == 0:
+            CHR = int(line[0])
+        if d != 0 and int(line[0]) != CHR:
+            d = 0
+            CHR = int(line[0])
+        Nsnps[CHR][d] = [float(line[3]),line[4],line[5]]
+        if float(line[3]) in Gindex[CHR].keys():
+            Gindex[CHR][float(line[3]) + .5] = [d]
+        else:
+            Gindex[CHR][float(line[1])] = [d]
+        d += 1
+    File.close()
+    return Nsnps,Gindex
+
 
 def BIMread(bimFile):
     '''

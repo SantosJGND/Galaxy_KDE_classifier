@@ -85,12 +85,12 @@ The scripts for classification and plotting are available as separate tools:
 In each case the parameters of the script are accessible and defaults are provided. 
 Through Galaxy, these tools can be combined into a [workflow of analysis](http://galaxy.southgreen.fr/galaxy/u/acomte/p/reconstruction-of-mosaic-genomes) to facilitate reproduction.
 
-## Summary Analysis - /Summary_functions
+## [Summary Analysis](/Summary_functions)
 
 Ideograms provide a visual summary of reference KDE assignments across local data sets. This repository provides tools for 
 a quantitative analysis of local KDE estimates.
 
-## Downstream Analysis - /Downstream_functions
+## [Downstream Analysis](/Downstream_functions)
 
 The study of reference distributions at local genomic regions consists of the first layer in a process of inference. This repository 
 provides tools to complement supervised information with targeted measures of local genetic correlation and distance.
@@ -103,7 +103,10 @@ provides tools to complement supervised information with targeted measures of lo
 
 ## Supplementary Material
 
-A series of [jupyter notebooks](https://github.com/SantosJGND/Genetic-data-analysis) was created in accompaniment to the development of this
+>[Gy_pipeline notebook](https://github.com/SantosJGND/Tools_and_toys/tree/master/VCF_analysis): 
+Condensed format of global and local assignment for small data sets. 
+
+>A series of [jupyter notebooks](https://github.com/SantosJGND/Genetic-data-analysis) was created in accompaniment to the development of this
 pipeline.
 
 
