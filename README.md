@@ -85,6 +85,10 @@ The scripts for classification and plotting are available as separate tools:
 In each case the parameters of the script are accessible and defaults are provided. 
 Through Galaxy, these tools can be combined into a [workflow of analysis](http://galaxy.southgreen.fr/galaxy/u/acomte/p/reconstruction-of-mosaic-genomes) to facilitate reproduction.
 
+## [Upstram pre-processing](/Upstream_process)
+
+Filter and subset data in plink format. Convert plink to vcf and geno formats.
+
 ## [Summary Analysis](/Summary_functions)
 
 Ideograms provide a visual summary of reference KDE assignments across local data sets. This repository provides tools for 

@@ -1,13 +1,13 @@
 ## Upstream process
 
-The KDE pipeline of analysis relies uses a combination of input formats. The 
+The KDE pipeline of analysis uses a combination of input formats. The 
 genotype data is read in .geno format, but accession and SNP information is read 
 from plink files `.fam` and `.bim` respectively. 
 
 This repository proposes a script, `Process_plink.py`, to automate the initial 
 step of formatting.
 
-This script re-processes filtering commands from the plink toolkit to pre-process
+This script re-purposes filtering commands from the plink toolkit to pre-process
 data, generating a new plink file set. Then, if the argument `--vcf` is given, 
 the filtered data is reformated to vcf. Finally, if the `--geno` argument is also
 provided, a .geno file is generated. This final step uses the sNMF function 
