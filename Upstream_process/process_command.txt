@@ -3,11 +3,12 @@
 qsub -N process -V -q normal.q -l mem_free=20G \
 -b y python -u Process_plink.py \
 --plinkfile /gs7k1/home/jgarcia/olde_home/FILTER_GENO/F3G/NG_001 \
---chr 8 \
+--chr 3 \
 --Nsample 15000 \
 --maf .01 \
 --vcf \
 --geno
+
 
 ## subset Region
 qsub -N process -V -q normal.q -l mem_free=20G \
