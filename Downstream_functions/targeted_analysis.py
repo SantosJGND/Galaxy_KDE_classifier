@@ -343,7 +343,7 @@ if Dr_var== 'all':
 
 
 ### PCA
-pca = PCA(n_components=5, whiten=False).fit(Clover[:,variation_focus].T)
+pca = PCA(n_components=10, whiten=False).fit(Clover[:,variation_focus].T)
 X_se = pca.transform(Clover[:,Subset].T)
 COMPS = pca.components_.T #*np.sqrt(pca.explained_variance_)
 
@@ -384,7 +384,7 @@ COMPS = pca.components_.T #*np.sqrt(pca.explained_variance_)
 #    #
 #    ### K-means
 from sklearn.cluster import KMeans
-kmeans = KMeans(n_clusters=10, random_state=0).fit(COMPS)
+kmeans = KMeans(n_clusters=10, random_state=0).fit(COMPS[:,5])
 labels1 = kmeans.labels_
 label_select = {y:[x for x in range(len(labels1)) if labels1[x] == y] for y in sorted(list(set(labels1)))}
 
