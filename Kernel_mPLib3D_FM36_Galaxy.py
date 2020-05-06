@@ -59,10 +59,7 @@ parser.add_argument("--het_cd",type= int,default = '1',help = "Het allele code")
 parser.add_argument("--hom_cd",type= int,default = '2',help = "Alt allele code")
 ###
 
-
-
 args = parser.parse_args()
-
 
 
 ########## Complementary files.

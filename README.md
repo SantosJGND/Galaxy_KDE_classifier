@@ -2,7 +2,7 @@
 
 Local haplotype classification and data exploration. This software was built with the purpose of comparing local 
 genetic distributions of diverging biological populations. The comparison of distributions is accompanied by a set of 
-visualisation tools we deemed useful for inference of evolutionary relationships.
+visualisation tools we deemed useful for inference of evolutionary relationships. 
 
 _Note_: Application of this pipeline of analysis should take into considerations the particular qualities of the data set for which 
 it was developped. The requirements for an informative output are only nearly met given the stable and high density of genetic markers,
