@@ -248,11 +248,30 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
                 ### Important to pay attention to this when applying this method to other data sets.
                 ### Allowed here for the homozygous nature of rice genomes and the high quality of the data.
                 ### think of replacing by by more performant imputation procedures.
-                Aro = np.nan_to_num(np.array([Seq[x] for x in it.chain(*[Geneo[x] for x in Crossed])]))
-                
-                Daddy = np.nan_to_num(np.array([Seq[x] for x in it.chain(*[Geneo[x] for x in Parents])]))
-                
+
+                Aro = np.array([Seq[x] for x in it.chain(*[Geneo[x] for x in Crossed])])
+                Daddy = np.array([Seq[x] for x in it.chain(*[Geneo[x] for x in Parents])])
                 b = np.concatenate((Aro,Daddy),axis = 0)
+
+                ## missing / Na index 
+                na_here= int(args.miss_cd)
+                ind_thresh= .1
+
+                nstat= np.array(b)
+                nstat= nstat == na_here
+                nstat= np.array(nstat,dtype= int)
+                nstat= np.sum(nstat,axis= 1)
+                nstat= nstat / b.shape[1]
+
+                nstat= ind_thresh >= ind_thresh
+                nstat= np.array(nstat,dtype= int)
+                nidx= [x for x in range(len(nstat)) if nstat[x] == 1]
+                ## nan to num.
+                Aro= np.nan_to_num(Aro)
+                Daddy= np.nan_to_num(Daddy)
+                b= np.nan_to_num(b)
+
+                ## add a 0 row. 
                 data = np.zeros((b.shape[0],b.shape[1]+1))
                 data[:,:-1] = b
                 
@@ -322,7 +341,8 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
                 
                 for D in range(len(Parents)):
                     Where = [sum([len(Geneo[x]) for x in Parents[0:D]])+Aro.shape[0],sum([len(Geneo[x]) for x in Parents[0:(D+1)]])+Aro.shape[0]]
-                    Where = [int(x) for x in Where]
+                    ## don't use accessions that don't pass the NA filter. 
+                    Where = [int(x) for x in Where if x not in nidx]
                     ### FILTER OUT OUTLIERS
                     ### Conservative methods are preferred since only extreme values 
                     ### can reasonably be removed given an unreliable sampling method.
@@ -420,6 +440,8 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
                         P_dist = np.nan_to_num(P_dist)
                         Fist = np.nan_to_num(Fist)
                     
+                    ####
+                    #### just add the copy the previous window if this one is completely NA. 
                     if sum(np.isnan(P_dist)) == len(P_dist):
                         if len(Likes[D]) == 0:
                             Likes[D].append([int(x in range(Where[0],Where[1])) for x in range(data.shape[0])])
@@ -429,6 +451,7 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
                             Accurate.append(Likes[D][-1])
                         continue
                     
+                    ####
                     ### Neutrality tests of filtered reference pop KDE derived log-Likelihoods.
                     ## Normality.append(scipy.stats.mstats.normaltest(P_dist)[1])
                     ######
@@ -444,6 +467,11 @@ def Main_engine(Fam,MissG,Geneo,Parents,GenoSUF,CHR,start,end,args):
                     if Control == True:
                         Fist = Fist * Mortal
                     
+                    ###
+                    ### set values of accessions with > individual NA threshold to 0.
+                    for idx in nidx:
+                        Fist[x]= 0
+
                     Accurate.append(Fist)
                     Likes[D].append(Fist)
                 
