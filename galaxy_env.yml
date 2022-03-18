@@ -1,0 +1,14 @@
+name: python multi-purpose env
+
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+
+dependencies:
+  - python=3.7
+  - matplotlib
+  - numpy 
+  - pandas
+  - scikit-learn
+  - scipy

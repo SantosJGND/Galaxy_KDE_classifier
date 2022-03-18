@@ -232,7 +232,7 @@ def Main_engine(Fam, MissG, Geneo, Parents, GenoSUF, CHR, start, end, args):
 
     Whose = list(it.chain(*Geneo.values()))
     SequenceStore = {fy: [] for fy in Whose}
-    # print(Parents)
+
     Likes = {x: [] for x in range(len(Parents))}
 
     Accuracy = []
@@ -263,7 +263,6 @@ def Main_engine(Fam, MissG, Geneo, Parents, GenoSUF, CHR, start, end, args):
 
         if Index > end:
             break
-
         if (
             len([x for x in Whose if line[x] == args.het_cd]) / float(len(Whose))
             > Filter_Het
@@ -276,12 +275,10 @@ def Main_engine(Fam, MissG, Geneo, Parents, GenoSUF, CHR, start, end, args):
             Index += 1
             continue
         if Index >= start and Index <= end:
-
             for judas in SequenceStore.keys():
                 SequenceStore[judas].append(Codes[int(line[judas])])
             Win += step
             if Win == Window:
-                print("hello")
                 s1 = time.time()
                 window_start = Index - Window + 1
 
@@ -298,7 +295,7 @@ def Main_engine(Fam, MissG, Geneo, Parents, GenoSUF, CHR, start, end, args):
                 )
                 b = np.concatenate((Aro, Daddy), axis=0)
 
-                ## missing / Na indexlen
+                ## missing / Na index
                 na_here = int(args.miss_cd)
                 ind_thresh = 0.1
 
@@ -308,10 +305,8 @@ def Main_engine(Fam, MissG, Geneo, Parents, GenoSUF, CHR, start, end, args):
                 nstat = np.sum(nstat, axis=1)
                 nstat = nstat / b.shape[1]
 
-                nstat = nstat >= ind_thresh
+                nstat = ind_thresh >= ind_thresh
                 nstat = np.array(nstat, dtype=int)
-                # print(nstat)
-
                 nidx = [x for x in range(len(nstat)) if nstat[x] == 1]
                 ## nan to num.
                 Aro = np.nan_to_num(Aro)
@@ -383,7 +378,7 @@ def Main_engine(Fam, MissG, Geneo, Parents, GenoSUF, CHR, start, end, args):
                 SpaceX = {x: data[Tree[x], :] for x in Tree.keys()}
 
                 for hill in SpaceX.keys():
-                    if len(Tree[hill]) <= 5:
+                    if len(Tree[hill]) <= 3:
                         continue
                     grid.fit(data[Tree[hill], :])
 
@@ -507,7 +502,7 @@ def Main_engine(Fam, MissG, Geneo, Parents, GenoSUF, CHR, start, end, args):
 
                     Indexes = [x for x in Indexes if x not in Below]
 
-                    Set_ref = np.vstack([tuple(row) for row in Quanted_set[Indexes, :]])
+                    Set_ref = np.vstack({tuple(row) for row in Quanted_set[Indexes, :]})
 
                     if KDE_tool == "sklearn":
                         grid.fit(Quanted_set[Indexes, :])
@@ -673,11 +668,6 @@ Points = sorted(Out[CHR].keys())
 ############## ######################################################
 
 start = args.id
-if Home[-1] != "/":
-    Home += "/"
-
-if not os.path.exists(Home):
-    os.mkdir(Home)
 
 print("writting analysis id:{0} to directory {1}".format(args.id, Home))
 
@@ -711,7 +701,6 @@ Output.close()
 #
 
 if args.MSprint == True:
-
     Output = open(
         Home + "Blocks_profiles_st" + str(start) + "_CHR" + str(CHR).zfill(2) + ".txt",
         "w",
