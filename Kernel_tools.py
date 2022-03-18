@@ -7,6 +7,14 @@ Created on Sun Mar 05 13:01:08 2017
 """
 
 
+def warn(*args, **kwargs):
+    pass
+
+
+import warnings
+
+warnings.warn = warn
+
 import itertools as it
 import sys
 import time
