@@ -281,7 +281,6 @@ def Main_engine(Fam, MissG, Geneo, Parents, GenoSUF, CHR, start, end, args):
                 SequenceStore[judas].append(Codes[int(line[judas])])
             Win += step
             if Win == Window:
-                print("hello")
                 s1 = time.time()
                 window_start = Index - Window + 1
 
@@ -673,13 +672,11 @@ Points = sorted(Out[CHR].keys())
 ############## ######################################################
 
 start = args.id
-if Home[-1] != "/":
-    Home += "/"
 
 if not os.path.exists(Home):
     os.mkdir(Home)
 
-print("writting analysis id:{0} to directory {1}".format(args.id, Home))
+print("writing analysis id:{0} to directory {1}".format(args.id, Home))
 
 Output = open(
     Home + "Blocks_Request_st" + str(start) + "_CHR" + str(CHR).zfill(2) + ".txt", "w"
