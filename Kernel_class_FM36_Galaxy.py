@@ -126,7 +126,7 @@ refs_lib, Parents, absent_refs = read_refs(args.ref, Fam)
 if absent_refs:
     print(",".join([str(x) for x in absent_refs]) + " absent from provided refs.")
 
-if len(absent_admx) > (0.5 * len(Crossed)):
+if len(absent_refs) > (0.5 * len(Crossed)):
     print("over half the references missing. Aborting run.")
 
 
@@ -256,7 +256,7 @@ def Main_engine(Fam, MissG, Geneo, Parents, GenoSUF, CHR, start, end, args):
     Codes[int(args.hom_cd)] = int(args.hom_cd)
 
     for line in Geno:
-
+        line = line.strip()
         d = Miss[Index][0]
 
         step = 1

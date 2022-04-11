@@ -73,7 +73,9 @@ def read_refs(index_file, Fam_lib):
 
     Input = open(index_file, "r")
     for line in Input:
-        line = line.split()
+        line = line.strip().split()
+        if not line:
+            continue
         if line[1] not in Fam_lib.keys():
             Absent.append(line[1])
             continue
@@ -167,7 +169,9 @@ def FAMread(Famfile):
     Inds = recursively_default_dict()
     d = 0
     for line in File:
-        line = line.split()
+        line = line.strip().split()
+        if not line:
+            continue
         Inds[d] = line[0]
         Inds[line[0]] = d
         d += 1
