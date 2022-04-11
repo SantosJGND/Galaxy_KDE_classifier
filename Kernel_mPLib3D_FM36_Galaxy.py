@@ -138,6 +138,13 @@ CHR = args.CHR
 
 Home = args.out
 
+print(f"Running on chromosome {CHR}")
+print(f"Running on {args.proc} processors")
+print(f"Outlier method: {args.outmethod}")
+print(f"Clustering method: {args.clustmethod}")
+print(f"Dimensionality reduction method: {args.dr}")
+print(f"Parent populations: {Parents}")
+
 if len(args.out) > 0:
     Home = args.out + "/"
 
@@ -232,10 +239,8 @@ def Main_engine(Fam, MissG, Geneo, Parents, GenoSUF, CHR, start, end, args):
 
     Whose = list(it.chain(*Geneo.values()))
     SequenceStore = {fy: [] for fy in Whose}
-    # print(Parents)
+    #
     Likes = {x: [] for x in range(len(Parents))}
-
-    Accuracy = []
 
     Geno = open(GenoFile, "r")
     Points = []
@@ -275,12 +280,14 @@ def Main_engine(Fam, MissG, Geneo, Parents, GenoSUF, CHR, start, end, args):
         ) == int(args.mono):
             Index += 1
             continue
+
         if Index >= start and Index <= end:
 
             for judas in SequenceStore.keys():
                 SequenceStore[judas].append(Codes[int(line[judas])])
             Win += step
             if Win == Window:
+
                 s1 = time.time()
                 window_start = Index - Window + 1
 
@@ -381,6 +388,9 @@ def Main_engine(Fam, MissG, Geneo, Parents, GenoSUF, CHR, start, end, args):
 
                 SpaceX = {x: data[Tree[x], :] for x in Tree.keys()}
 
+                #### perform meanshift kernel density estimation for each cluster identified.
+                ## IN FEATURE SPACE.
+                ##  groups of less than 5 samples are not analysed.
                 for hill in SpaceX.keys():
                     if len(Tree[hill]) <= 5:
                         continue

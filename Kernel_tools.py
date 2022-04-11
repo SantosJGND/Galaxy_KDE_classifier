@@ -15,9 +15,7 @@ import warnings
 
 warnings.warn = warn
 
-import itertools as it
 import sys
-import time
 
 import numpy as np
 from numpy import mean, nan
@@ -48,6 +46,7 @@ def OriginbySNMF(Geno_Q, t):
     """
     Geneo = open(Geno_Q, "r")
     Ind = 0
+
     Groups = recursively_default_dict()
     for line in Geneo:
         line = line.split()

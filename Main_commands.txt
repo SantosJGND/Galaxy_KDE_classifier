@@ -25,8 +25,10 @@
 
 ## test run Kernel classification
 
+for chrom in {1..12}; do
+
 qsub -N FM36 -V -q bigmem.q -pe parallel_smp 10 -l mem_free=20G -b y python -u Kernel_mPLib3D_FM36_Galaxy.py \
---CHR 2 \
+--CHR $chrom \
 --geno /gs7k1/home/jgarcia/olde_home/FILTER_GENO/SplitGENO/GENO_chr02.geno \
 --fam /gs7k1/home/jgarcia/olde_home/FILTER_GENO/F3G/NG_001.fam \
 --bim /gs7k1/home/jgarcia/olde_home/FILTER_GENO/F3G/NG_001.bim \
@@ -34,7 +36,7 @@ qsub -N FM36 -V -q bigmem.q -pe parallel_smp 10 -l mem_free=20G -b y python -u K
 --admx /gs7k1/home/jgarcia/PO_Core/admx_CORE.txt \
 --proc 10
 
-
+done
 
 ## test run Ideogram plot:
 ### focusing on the GroupI (focus file)
