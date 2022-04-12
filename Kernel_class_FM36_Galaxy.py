@@ -6,6 +6,8 @@ Created on Sun Mar 05 13:01:08 2017
 """
 
 import argparse
+import itertools as it
+import multiprocessing as mp
 import os
 
 from Kernel_tools import *
@@ -603,7 +605,6 @@ def Main_engine(Fam, MissG, Geneo, Parents, GenoSUF, CHR, start, end, args):
 ################  ###################  ###############################  ###################
 ###############    ###################  #############################  #####################
 
-import multiprocessing as mp
 
 nbProcs = int(args.proc)
 
